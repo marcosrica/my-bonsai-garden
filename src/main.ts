@@ -1,14 +1,17 @@
 import './assets/main.css'
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
+import App from './App.vue';
+import router from './router';
+import { useTreeStore } from './stores/trees';
 
-import App from './App.vue'
-import router from './router'
+const app = createApp(App);
+app.use(createPinia());
+app.use(router);
 
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-
-app.mount('#app')
+// Pre-initialize database and load data before any component renders
+const store = useTreeStore();
+store.init().then(() => {
+  app.mount('#app');
+});
