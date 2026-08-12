@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
 import { getAllTrees, initDatabase } from "@/services/database";
 
-interface Tree {
+export interface Tree {
   id: number;
+  name: string;
   species: number;
   year_planted: number;
   created_at: string;

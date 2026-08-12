@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import BasePage from '@/components/BasePage.vue';
+import type { Tree } from '@/stores/trees';
 
-//import { useTreeStore } from '@/stores/trees';
-//const store = useTreeStore();
+const trees: Tree[] = [
+    {id: 0, name: "Tree 1", species: 1, year_planted: 2020, created_at: ""},
+    {id: 1, name: "Tree 2", species: 1, year_planted: 2016, created_at: ""}
+];
 // 
 /*
 <div v-if="store.loading">Loading...</div>
@@ -16,61 +19,109 @@ import BasePage from '@/components/BasePage.vue';
 
 <template>
     <BasePage>
-        
+        <h1 class="Header"> Colección </h1>
+
+        <div class="HomeOptions">
+            
+        </div>
+
+        <div class="TreesDiv">
+            <div v-for="tree in trees" class="TreeDiv"> 
+                <div class="TreeImg">
+                    
+                </div>
+
+                <div class="TreeData">
+                    <p class="marginless treeNameText" style="font-size: 25px;"> {{tree.name}} </p>
+                    <p class="marginless treeSpeciesText"> Aspaleocotus malacateaus </p>
+                </div>
+
+                <div class="RightArrow">
+                    
+                </div>
+            </div>
+        </div>
     </BasePage>
 </template>
 
 <style scoped>
-.app {
-    box-sizing: border-box;
-    width: 100dvw;
-    height: 100dvh;
+@import url('https://fonts.googleapis.com/css2?family=Fontdiner+Swanky&family=IBM+Plex+Serif:ital,wght@0,500;0,700;1,500;1,700&family=Jim+Nightshade&display=swap');
 
-    background-color: rebeccapurple;
+.marginless {
+    margin: 0px;;
 }
 
-.bottomBar {
-    position: absolute;
-    bottom: 20px;
-    width: 100dvw;
-    height: 75px;
-    padding-left: 20px;
-    padding-right: 20px;
-    box-sizing: border-box;
+.Header {
+    margin-top: 10px;
+    font-family: "IBM Plex Serif", serif;
+    font-weight: 700;
+    font-size: 50px;
+    text-align: center;
+}
 
+.HomeOptions {
+    width: 100%;
+    height: 50px;
+    background-color: green;
+    margin-bottom: 10px;
+}
+
+.TreesDiv {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.TreeDiv {
+    background-color: yellow;
+
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 50px;
+    
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 10px;
 }
 
-.menu {
-    width:  150px;
-    height: 75px;
-
-    border-radius: 50px;
-    
-    background-color: orange;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    cursor: pointer;
+.TreeImg {
+    box-sizing: border-box;
+    height: 60px;
+    aspect-ratio: 1;
+    background-color: pink;
+    margin-right: 10px;
 }
 
-.AddBonsaiButtonWrapper {
-    width:  75px;
-    height: 75px;
-
-    border-radius: 50px;
-    
-    background-color: orange;
-
+.TreeData {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex: 1;
+}
 
-    cursor: pointer;
+.treeNameText {
+    font-family: 'IBM Plex Serif', serif;
+    font-weight: 700;
+}
+
+.treeSpeciesText {
+    font-family: "IBM Plex Serif", serif;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.RightArrow {
+    height: 20px;
+    aspect-ratio: 1;
+    background-color: black;
+    mask-image: url('/icons/RightArrow.svg');
+    mask-size: contain;
 }
 </style>
