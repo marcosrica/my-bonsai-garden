@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import BasePage from '@/components/BasePage.vue';
 
-//import { useTreeStore } from '@/stores/trees';
-//const store = useTreeStore();
-// 
-/*
-<div v-if="store.loading">Loading...</div>
-    <ul v-else>
-      <li v-for="tree in store.trees" :key="tree.id">
-        {{ tree.species }} – Planted {{ tree.year_planted }}
-      </li>
-    </ul>
-*/
 </script>
 
 <template>
-    <BasePage>
+  <div class="app">
+    <div class="background">
+        <slot />
+    </div>
+
+    <div class="bottomBar">
+        <div class="menu">
+            <p style="margin: 0px; font-size: 40px;"> + </p>
+            <p style="margin: 0px; font-size: 40px;"> + </p>
+        </div>
         
-    </BasePage>
+        <div class="AddBonsaiButtonWrapper">
+            <p style="margin: 0px; font-size: 40px;"> + </p>
+        </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -26,7 +27,18 @@ import BasePage from '@/components/BasePage.vue';
     width: 100dvw;
     height: 100dvh;
 
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
     background-color: rebeccapurple;
+}
+
+.background {
+    width: 95%;
+    min-height: 100dvh;
+    background-color: red;
 }
 
 .bottomBar {
