@@ -27,10 +27,9 @@ const trees: Tree[] = [
 
 <template>
     <BasePage>
-        <h1 class="Header"> Colección </h1>
-
         <div class="HomeOptions">
-            
+            <h1 class="Header"> Colección </h1>
+            <div class="search" />
         </div>
 
         <div class="TreesDiv">
@@ -56,7 +55,7 @@ const trees: Tree[] = [
 @import url('https://fonts.googleapis.com/css2?family=Fontdiner+Swanky&family=IBM+Plex+Serif:ital,wght@0,500;0,700;1,500;1,700&family=Jim+Nightshade&display=swap');
 
 .marginless {
-    margin: 0px;;
+    margin: 0px;
 }
 
 .Header {
@@ -68,10 +67,16 @@ const trees: Tree[] = [
 }
 
 .HomeOptions {
+    box-sizing: border-box;
     width: 100%;
     height: 50px;
-    background-color: green;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .TreesDiv {
@@ -131,6 +136,14 @@ const trees: Tree[] = [
     aspect-ratio: 1;
     background-color: black;
     mask-image: url('/icons/RightArrow.svg');
+    mask-size: contain;
+}
+
+.search {
+    height: 80%;
+    aspect-ratio: 1;
+    background-color: black;
+    mask-image: url('/icons/Search.svg');
     mask-size: contain;
 }
 </style>

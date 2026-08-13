@@ -10,8 +10,8 @@
 
     <div class="bottomBar">
         <div class="menu">
-            <p style="margin: 0px; font-size: 40px;"> + </p>
-            <p style="margin: 0px; font-size: 40px;"> + </p>
+            <div class="Bonsai"/>
+            <div class="Reminder"/>
         </div>
         
         <div class="AddBonsaiButtonWrapper">
@@ -66,10 +66,13 @@
     background-color: orange;
 
     display: flex;
+    flex-direction: row;
+    gap: 20px;
     justify-content: center;
     align-items: center;
 
-    cursor: pointer;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .AddBonsaiButtonWrapper {
@@ -84,6 +87,24 @@
     justify-content: center;
     align-items: center;
 
+    cursor: pointer;
+}
+
+.Bonsai {
+    height: 70%;
+    aspect-ratio: 1;
+    background-color: black;
+    mask-image: url('/icons/Bonsai.svg');
+    mask-size: contain;
+    cursor: pointer;
+}
+
+.Reminder {
+    height: 70%;
+    aspect-ratio: 1;
+    background-color: black;
+    mask-image: url('/icons/Reminder.svg');
+    mask-size: contain;
     cursor: pointer;
 }
 </style>
