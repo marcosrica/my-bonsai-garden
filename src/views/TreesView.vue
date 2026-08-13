@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import BasePage from '@/components/BasePage.vue';
 import type { Tree } from '@/stores/trees';
+import { useRouter } from 'vue-router';
+const router = useRouter()
 
 const trees: Tree[] = [
     {id: 0, name: "Tree 1", species: 1, year_planted: 2020, created_at: ""},
@@ -14,6 +16,11 @@ const trees: Tree[] = [
     {id: 1, name: "Tree 9", species: 1, year_planted: 2016, created_at: ""},
     {id: 1, name: "Tree 10", species: 1, year_planted: 2016, created_at: ""},
 ];
+
+const inspectTree = (id: number) => {
+  router.push("/bonsai?id=" + id);
+}
+
 // 
 /*
 <div v-if="store.loading">Loading...</div>
@@ -33,7 +40,7 @@ const trees: Tree[] = [
         </div>
 
         <div class="TreesDiv">
-            <div v-for="tree in trees" class="TreeDiv"> 
+            <div v-for="tree in trees" class="TreeDiv" v-on:click="inspectTree(tree.id)"> 
                 <div class="TreeImg">
                     
                 </div>
