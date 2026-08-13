@@ -5,6 +5,7 @@ const router = useRouter();
 
 const props = defineProps<{
   location: string,
+  varyAddColor?: boolean,
   addClicked?: () => void,
 }>();
 
@@ -29,8 +30,8 @@ const goToReminders = () => {
             <div :class="['Reminder', props.location == 'reminder' ? 'ReminderSelected' : '']" v-on:click="goToReminders"/>
         </div>
         
-        <div class="AddBonsaiButtonWrapper">
-            <p style="margin: 0px; font-size: 40px;"> + </p>
+        <div class="AddBonsaiButtonWrapper" v-on:click="addClicked">
+            <p style="margin: 0px; font-size: 40px;" :class="[varyAddColor ? 'addSelected' : '']"> + </p>
         </div>
     </div>
   </div>
@@ -88,6 +89,8 @@ const goToReminders = () => {
 
     padding-left: 20px;
     padding-right: 20px;
+
+    z-index: 10;
 }
 
 .AddBonsaiButtonWrapper {
@@ -104,6 +107,7 @@ const goToReminders = () => {
     align-items: center;
 
     cursor: pointer;
+    z-index: 10000000;
 }
 
 .Bonsai {
@@ -130,5 +134,9 @@ const goToReminders = () => {
 
 .ReminderSelected {
     background-color: var(--soil-clay);
+}
+
+.addSelected {
+    color: var(--soil-clay);
 }
 </style>

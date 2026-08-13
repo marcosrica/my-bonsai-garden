@@ -1,25 +1,39 @@
 <script setup lang="ts">
 import BasePage from '@/components/BasePage.vue';
+import ImageInput from '@/components/ImageInput.vue';
 import type { Tree } from '@/stores/trees';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-const router = useRouter()
+import { useTreeStore } from '@/stores/trees';
+import type treeMenuData from '@/interfaces/TreeMenuData';
+import { Capacitor } from '@capacitor/core';
 
-const trees: Tree[] = [
-    {id: 0, name: "Tree 1", species: 1, year_planted: 2020, created_at: ""},
-    {id: 1, name: "Tree 2", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 3", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 4", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 5", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 6", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 7", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 8", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 9", species: 1, year_planted: 2016, created_at: ""},
-    {id: 1, name: "Tree 10", species: 1, year_planted: 2016, created_at: ""},
-];
+const router = useRouter();
+const treeStore = useTreeStore();
+treeStore.init();
+
+const showAddTreePanel = ref<boolean>(false);
+
+const trees = ref<treeMenuData[]>([]);
+
+const getTrees = async () => {
+    await treeStore.fetchTrees();
+    trees.value = treeStore.trees;
+}
+
+const addNewTree = () => {
+  console.log(showAddTreePanel.value);
+  showAddTreePanel.value = !showAddTreePanel.value;
+}
 
 const inspectTree = (id: number) => {
   router.push("/bonsai?id=" + id);
 }
+
+onMounted(async () => {
+    await getTrees();
+    console.log("trees logged");
+})
 
 // 
 /*
@@ -33,7 +47,15 @@ const inspectTree = (id: number) => {
 </script>
 
 <template>
-    <BasePage location="home">
+    <BasePage location="home" :addClicked="addNewTree" :varyAddColor="showAddTreePanel">
+        <div class="blackOut" v-if="showAddTreePanel" v-on:click="addNewTree"/>
+
+        <div class="addTreePanel" v-if="showAddTreePanel">
+            <h1 class="Header" style="font-size: 30px; margin-top: 10px"> Añadir árbol </h1>
+
+            <ImageInput></ImageInput>
+        </div>
+        
         <div class="HomeOptions">
             <h1 class="Header"> Colección </h1>
             <div class="search" />
@@ -41,18 +63,14 @@ const inspectTree = (id: number) => {
 
         <div class="TreesDiv">
             <div v-for="tree in trees" class="TreeDiv" v-on:click="inspectTree(tree.id)"> 
-                <div class="TreeImg">
-                    
-                </div>
+                <div class="TreeImg" :style="{ backgroundImage: `url(${Capacitor.convertFileSrc(tree.image)})` }"/>
 
                 <div class="TreeData">
                     <p class="marginless treeNameText" style="font-size: 25px;"> {{tree.name}} </p>
                     <p class="marginless treeSpeciesText"> Aspaleocotus malacateaus </p>
                 </div>
 
-                <div class="RightArrow">
-                    
-                </div>
+                <div class="RightArrow" />
             </div>
         </div>
     </BasePage>
@@ -119,7 +137,7 @@ const inspectTree = (id: number) => {
     margin-right: 10px;
     border-radius: 6px;
 
-    background-image: url('/icons/Wallpaper_Phone_1.png');
+    /*background-image: url('/icons/Wallpaper_Phone_1.png');*/
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -157,5 +175,37 @@ const inspectTree = (id: number) => {
     background-color: black;
     mask-image: url('/icons/Search.svg');
     mask-size: contain;
+}
+
+.blackOut {
+    position: absolute;
+    background-color: #000000cc;
+    z-index: 100;
+
+    width: 100dvw;
+    height: 100dvh;
+
+    top: 0;
+    left: 0;
+}
+
+.addTreePanel {
+    z-index: 1000;
+    position: absolute;
+    right: 20px;
+    bottom: 110px;
+
+    width: 80dvw;
+    height: auto;
+    padding-bottom: 10px;
+    background-color: var(--soil-secondary);
+
+    border: 2px solid black;
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
 </style>
