@@ -1,10 +1,16 @@
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
 
 let db: SQLiteDBConnection | null = null;
+const sqlite = new SQLiteConnection(CapacitorSQLite);
 
 export async function initDatabase(): Promise<void> {
-  const sqlite = new SQLiteConnection(CapacitorSQLite);
-  db = await sqlite.createConnection('bonsai-db', false, 'no-encryption', 1, false);
+  try {
+    db = await sqlite.retrieveConnection('bonsai-db', false);
+  }
+  catch (error) {
+    //Create new connection
+    db = await sqlite.createConnection('bonsai-db', false, 'no-encryption', 1, false);
+  }
   await db.open();
 
   //Creating the tables if they don't exist

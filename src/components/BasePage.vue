@@ -1,15 +1,19 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 const props = defineProps<{
   location: string,
   addClicked?: () => void,
 }>();
 
 const goHome = () => {
-  location.href = "/";
+  router.push("/");
 }
 
 const goToReminders = () => {
-  location.href = "/reminders";
+  router.push("/reminders");
 }
 </script>
 

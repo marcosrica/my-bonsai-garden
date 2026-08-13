@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TreesView from '@/views/TreesView.vue'
+import Reminders from '@/views/Reminders.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: TreesView,
+    },
+    {
+      path: '/reminders',
+      name: 'reminders',
+      component: Reminders
     }
   ],
 })
