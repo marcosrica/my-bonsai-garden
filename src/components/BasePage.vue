@@ -32,13 +32,12 @@
     justify-content: flex-start;
     align-items: center;
 
-    background-color: rebeccapurple;
+    background-color: var(--soil-bg);
 }
 
 .background {
     width: 95%;
     min-height: 100dvh;
-    background-color: red;
     overflow: auto;
 }
 
@@ -62,12 +61,13 @@
     height: 75px;
 
     border-radius: 50px;
+    border: 2px solid black;
     
-    background-color: orange;
+    background-color: var(--soil-secondary);
 
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 40px;
     justify-content: center;
     align-items: center;
 
@@ -80,8 +80,9 @@
     height: 75px;
 
     border-radius: 50px;
+    border: 2px solid black;
     
-    background-color: orange;
+    background-color: var(--soil-secondary);
 
     display: flex;
     justify-content: center;

@@ -59,7 +59,6 @@ const trees: Tree[] = [
 }
 
 .Header {
-    margin-top: 10px;
     font-family: "IBM Plex Serif", serif;
     font-weight: 700;
     font-size: 50px;
@@ -88,7 +87,8 @@ const trees: Tree[] = [
 }
 
 .TreeDiv {
-    background-color: yellow;
+    background-color: var(--soil-primary);
+    box-shadow: var(--shadow-card);
 
     box-sizing: border-box;
     width: 100%;
@@ -110,6 +110,7 @@ const trees: Tree[] = [
     aspect-ratio: 1;
     background-color: pink;
     margin-right: 10px;
+    border-radius: 6px;
 }
 
 .TreeData {
