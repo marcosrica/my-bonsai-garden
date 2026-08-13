@@ -14,7 +14,7 @@ export async function initDatabase(): Promise<void> {
   await db.open();
 
   //Dropping the tables for easier development
-  //await dropTables(db);
+  await dropTables(db);
   
   //Creating the tables if they don't exist
   await db.execute(`

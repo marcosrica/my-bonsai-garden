@@ -3,6 +3,10 @@
     import { pickImage } from '@/services/camera';
     import { savePhoto } from '@/services/storage';
     import { addNewTree, getConnection } from '@/services/database';
+
+    const props = defineProps<{
+        treeAdded: () => void,
+    }>();
     
     const imageBase64 = ref<string | null>(null);
     const imageDataUrl = ref<string | null>(null);
@@ -55,6 +59,7 @@
                 
                 if (result) {
                     alert('¡Guardado!');
+                    props.treeAdded();
                 }
                 else {
                     alert('Hubo un error al guardar. Por favor, inténtelo de nuevo');

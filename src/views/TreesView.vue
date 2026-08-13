@@ -22,8 +22,12 @@ const getTrees = async () => {
 }
 
 const addNewTree = () => {
-  console.log(showAddTreePanel.value);
-  showAddTreePanel.value = !showAddTreePanel.value;
+    showAddTreePanel.value = !showAddTreePanel.value;
+}
+
+const treeAdded = () => {
+    showAddTreePanel.value = false;
+    getTrees();
 }
 
 const inspectTree = (id: number) => {
@@ -53,7 +57,7 @@ onMounted(async () => {
         <div class="addTreePanel" v-if="showAddTreePanel">
             <h1 class="Header" style="font-size: 30px; margin-top: 10px"> Añadir árbol </h1>
 
-            <ImageInput></ImageInput>
+            <ImageInput :treeAdded="treeAdded"></ImageInput>
         </div>
         
         <div class="HomeOptions">
