@@ -26,7 +26,7 @@ const trees: Tree[] = [
 </script>
 
 <template>
-    <BasePage>
+    <BasePage location="home">
         <div class="HomeOptions">
             <h1 class="Header"> Colección </h1>
             <div class="search" />
@@ -84,6 +84,7 @@ const trees: Tree[] = [
     width: 100%;
     box-sizing: border-box;
     margin-bottom: 105px;
+    cursor: pointer;
 }
 
 .TreeDiv {
@@ -108,9 +109,12 @@ const trees: Tree[] = [
     box-sizing: border-box;
     height: 60px;
     aspect-ratio: 1;
-    background-color: pink;
     margin-right: 10px;
     border-radius: 6px;
+
+    background-image: url('/icons/Wallpaper_Phone_1.png');
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 .TreeData {

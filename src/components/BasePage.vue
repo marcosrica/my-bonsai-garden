@@ -1,5 +1,8 @@
 <script setup lang="ts">
-
+const props = defineProps<{
+  location: string,
+  addClicked?: () => void,
+}>();
 </script>
 
 <template>
@@ -10,8 +13,8 @@
 
     <div class="bottomBar">
         <div class="menu">
-            <div class="Bonsai"/>
-            <div class="Reminder"/>
+            <div :class="['Bonsai', props.location == 'home' ? 'BonsaiSelected' : '']"/>
+            <div :class="['Reminder', props.location == 'reminder' ? 'ReminderSelected' : '']"/>
         </div>
         
         <div class="AddBonsaiButtonWrapper">
@@ -100,6 +103,10 @@
     cursor: pointer;
 }
 
+.BonsaiSelected {
+    background-color: var(--soil-clay);
+}
+
 .Reminder {
     height: 70%;
     aspect-ratio: 1;
@@ -107,5 +114,9 @@
     mask-image: url('/icons/Reminder.svg');
     mask-size: contain;
     cursor: pointer;
+}
+
+.ReminderSelected {
+    background-color: var(--soil-clay);
 }
 </style>
