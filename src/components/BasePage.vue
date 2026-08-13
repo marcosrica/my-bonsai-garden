@@ -39,6 +39,7 @@
     width: 95%;
     min-height: 100dvh;
     background-color: red;
+    overflow: auto;
 }
 
 .bottomBar {

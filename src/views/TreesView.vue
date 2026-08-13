@@ -4,7 +4,15 @@ import type { Tree } from '@/stores/trees';
 
 const trees: Tree[] = [
     {id: 0, name: "Tree 1", species: 1, year_planted: 2020, created_at: ""},
-    {id: 1, name: "Tree 2", species: 1, year_planted: 2016, created_at: ""}
+    {id: 1, name: "Tree 2", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 3", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 4", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 5", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 6", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 7", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 8", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 9", species: 1, year_planted: 2016, created_at: ""},
+    {id: 1, name: "Tree 10", species: 1, year_planted: 2016, created_at: ""},
 ];
 // 
 /*
@@ -71,6 +79,7 @@ const trees: Tree[] = [
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
+    margin-bottom: 105px;
 }
 
 .TreeDiv {
