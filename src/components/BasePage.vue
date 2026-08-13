@@ -3,6 +3,14 @@ const props = defineProps<{
   location: string,
   addClicked?: () => void,
 }>();
+
+const goHome = () => {
+  location.href = "/";
+}
+
+const goToReminders = () => {
+  location.href = "/reminders";
+}
 </script>
 
 <template>
@@ -13,8 +21,8 @@ const props = defineProps<{
 
     <div class="bottomBar">
         <div class="menu">
-            <div :class="['Bonsai', props.location == 'home' ? 'BonsaiSelected' : '']"/>
-            <div :class="['Reminder', props.location == 'reminder' ? 'ReminderSelected' : '']"/>
+            <div :class="['Bonsai', props.location == 'home' ? 'BonsaiSelected' : '']" v-on:click="goHome"/>
+            <div :class="['Reminder', props.location == 'reminder' ? 'ReminderSelected' : '']" v-on:click="goToReminders"/>
         </div>
         
         <div class="AddBonsaiButtonWrapper">
