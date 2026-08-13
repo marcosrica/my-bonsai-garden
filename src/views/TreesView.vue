@@ -71,7 +71,7 @@ onMounted(async () => {
 
                 <div class="TreeData">
                     <p class="marginless treeNameText" style="font-size: 25px;"> {{tree.name}} </p>
-                    <p class="marginless treeSpeciesText"> Aspaleocotus malacateaus </p>
+                    <p class="marginless treeSpeciesText"> {{tree.species}} </p>
                 </div>
 
                 <div class="RightArrow" />
