@@ -6,9 +6,22 @@ import { Capacitor } from '@capacitor/core';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
+const showEditPanel = ref<boolean>(true);
+const treeAge = ref<string>("");
+const newName = ref<string>("");
+const newSpecies = ref<string>("");
+
 const treeStore = useFullTreeStore();
 let id = useRoute().query.id;
 const data = ref<fullTreeData>();
+
+const getData = async (id: string) => {
+    await treeStore.getData(id as string);
+    data.value = treeStore.tree;
+
+    newName.value = data.value?.name || "";
+    newSpecies.value = data.value?.species || "";
+}
 
 onMounted(async () => {
     if (id == undefined) {
@@ -16,15 +29,44 @@ onMounted(async () => {
     }
 
     await treeStore.init(id as string);
-    await treeStore.getData(id as string);
-    data.value = treeStore.tree;
+    await getData(id as string);
 })
 </script>
 
 <template>
     <BaseBonsaiPage>
-        <div class="editButton">
-            <div class="editIcon" />
+        <div class="editButton" v-on:click="showEditPanel = true">
+            <div class="editIcon"/>
+        </div>
+
+        <div class="blackBackground" v-if="showEditPanel" v-on:click.self="showEditPanel = false">
+            <form class="editPanelBackground">
+                <div class="editPanelHeader">
+                    <p class="marginless treeNameText" style="font-size: 40px;"> Editar </p>
+                    <div class="closeEditPanel" v-on:click="showEditPanel = false">
+                        <div class="editIcon" style="mask-image: url('/icons/Cross.svg');"/>
+                    </div>
+                </div>
+
+                <div class="editPanelRow">
+                    <p class="marginless treeSpeciesText" style="font-style: normal;"> Nombre: </p>
+                    <input class="input" type="text" v-model="newName">
+                </div>
+
+                <div class="editPanelRow">
+                    <p class="marginless treeSpeciesText" style="font-style: normal;"> Especie: </p>
+                    <input class="input" type="text" v-model="newSpecies">
+                </div>
+                
+                <div class="editPanelRow">
+                    <p class="marginless treeSpeciesText" style="font-style: normal;"> Año de comienzo: </p>
+                    <input class="input" type="date">
+                </div>
+
+                <div class="acceptButton">
+                    <p class="marginless treeSpeciesText" style="font-style: normal;"> Guardar </p>
+                </div>
+            </form>
         </div>
         
         <div class="header">
@@ -38,9 +80,9 @@ onMounted(async () => {
 
         <div class="info">
             <div class="basicInfo">
-                <p class="marginless" > Edad: {{data?.year_planted}} </p>
-                <p class="marginless" > Último transplante: {{data?.last_transplanted}} </p>
-                <p class="marginless" > Último abono: {{data?.last_abonated}} </p>
+                <p class="marginless" > Edad: {{data?.year_planted ? data?.year_planted : "Sin datos"}} </p>
+                <p class="marginless" > Último transplante: {{data?.last_transplanted ? data?.last_transplanted : "Sin datos"}} </p>
+                <p class="marginless" > Último abono: {{data?.last_abonated ? data?.last_abonated : "Sin datos"}} </p>
             </div>
         </div>
     </BaseBonsaiPage>
@@ -119,6 +161,7 @@ onMounted(async () => {
     align-items: center;
 
     cursor: pointer;
+    z-index: 10000;
 }
 
 .editIcon {
@@ -151,10 +194,100 @@ onMounted(async () => {
 
     box-sizing: border-box;
     width: 100%;
-    background-color: orange;
+    background-color: var(--soil-clay);
     border-radius: 20px;
 
     font-family: "IBM Plex Serif", serif;
     font-weight: 500;
+}
+
+.blackBackground {
+    width: 100dvw;
+    height: 100dvh;
+    background-color: #000000cc;
+
+    position: absolute;
+    top: 0px;
+    left: 0px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 10000000000000;
+}
+
+.editPanelBackground {
+    width: 90%;
+    padding: 10px;
+    border-radius: 20px;
+
+    background-color: var(--soil-primary);
+    box-shadow: 0 4px 8px 10px #0003, 0 6px 20px 20px #00000030;
+    
+    z-index: 10000000000010;
+}
+
+.input {
+    background: var(--soil-bg);
+    border: 1px solid var(--soil-border);
+    border-radius: 8px;
+    padding: 0.6rem;
+    font-size: 1rem;
+    color: black;
+}
+
+.closeEditPanel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 40px;
+    aspect-ratio: 1;
+    border-radius: 50px;
+    background-color: var(--soil-secondary);
+    border: 2px solid black;
+    
+    cursor: pointer;    
+}
+
+.editPanelHeader {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    border-bottom: 2px solid black;
+    margin-bottom: 20px;
+}
+
+.editPanelRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.acceptButton {
+    padding: 10px;
+    background-color: var(--soil-accent);
+
+    border-radius: 20px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s ease;
+}
+
+.acceptButton:hover {
+    background-color: var(--soil-accent-hover);
 }
 </style>
