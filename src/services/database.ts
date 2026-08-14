@@ -20,6 +20,7 @@ export async function initDatabase(): Promise<void> {
   await db.execute(`
     CREATE TABLE IF NOT EXISTS trees (
       id INTEGER PRIMARY KEY NOT NULL,
+      dead BOOLEAN DEFAULT false,
       name TEXT NOT NULL,
       description TEXT,
       image TEXT NOT NULL,
@@ -31,6 +32,7 @@ export async function initDatabase(): Promise<void> {
     );
   `);
 
+  /*
   await db.execute(`
     CREATE TABLE IF NOT EXISTS feed (
       id INTEGER PRIMARY KEY,
@@ -41,12 +43,15 @@ export async function initDatabase(): Promise<void> {
       FOREIGN KEY (tree_id) REFERENCES trees(id)
     );
   `);
+  */
+
 }
 
 export async function getConnection(): Promise<SQLiteDBConnection> {
   if (!db) throw new Error('Database not initialized');
   return db;
 }
+
 
 export async function getMenuTrees() {
   const db = await getConnection();
@@ -72,6 +77,56 @@ export async function addNewTree(name: string, species: string, imgPath:string):
 
   return id != undefined;
 }
+
+export async function changeTreeInit(id: string, year: number): Promise<boolean> {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    UPDATE trees SET year_planted = ? WHERE id = ?
+    `, [year, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
+export async function abonateTree(id: string) {
+  const db = await getConnection();
+  let date: Date = new Date(Date.now());
+  const formattedDate = date.getMonth() + "/" + date.getFullYear();
+
+  const result = await db.run(`
+    UPDATE trees SET last_abonated = ? WHERE id = ?
+    `, [formattedDate, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
+export async function transplantTree(id: string) {
+  const db = await getConnection();
+  let date: Date = new Date(Date.now());
+  const formattedDate = date.getMonth() + "/" + date.getFullYear();
+
+  const result = await db.run(`
+    UPDATE trees SET last_transplanted = ? WHERE id = ?
+    `, [formattedDate, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
+export async function killTree(id: string, value:boolean) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    UPDATE trees SET dead = ? WHERE id = ?
+    `, [value, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
+
 
 const dropTables = async (database: SQLiteDBConnection) => {
   await database.execute(`DROP TABLE IF EXISTS trees`);

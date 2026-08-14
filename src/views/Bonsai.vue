@@ -1,19 +1,61 @@
 <script setup lang="ts">
 import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
 import type fullTreeData from '@/interfaces/FullTreeData';
+import { abonateTree, changeTreeInit, killTree, transplantTree } from '@/services/database';
 import { useFullTreeStore } from '@/stores/trees';
 import { Capacitor } from '@capacitor/core';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
-const showEditPanel = ref<boolean>(true);
-const treeAge = ref<string>("");
+const showEditPanel = ref<boolean>(false);
+const treeAge = ref<number>(-1);
 const newName = ref<string>("");
 const newSpecies = ref<string>("");
 
 const treeStore = useFullTreeStore();
 let id = useRoute().query.id;
 const data = ref<fullTreeData>();
+
+const currentYear:number = new Date(Date.now()).getFullYear();
+
+const transplant = async () => {
+    const _id = id?.toString() || "";
+    const response: boolean = await transplantTree(_id);
+    getData(_id);
+}
+
+const abonate = async () => {
+    const _id = id?.toString() || "";
+    const response: boolean = await abonateTree(_id);
+    getData(_id);
+}
+
+const kill = async (value: boolean) => {
+    const _id = id?.toString() || "";
+    const response: boolean = await killTree(_id, value);
+    getData(_id);
+}
+
+const saveData = async () => {
+    let result1 = true;
+    let result2 = true;
+    let result3 = true;
+    const _id = id?.toString() || "";
+    
+    if (data.value != undefined) {
+        if (data.value.year_planted != treeAge.value) {
+            result1 = await changeTreeInit(_id, treeAge.value);
+        }
+    }
+
+    if (result1 && result2 && result3) {
+        showEditPanel.value = false;
+        await getData(_id);
+    }
+    else {
+        alert("Ha habido un error. Por favor, inténtelo de nuevo");
+    }
+}
 
 const getData = async (id: string) => {
     await treeStore.getData(id as string);
@@ -48,6 +90,21 @@ onMounted(async () => {
                     </div>
                 </div>
 
+                <div class="basicInfo button" v-on:click="transplant" style="margin-top: 20px;">
+                    <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Transplantar </p>
+                </div>
+                
+                <div class="basicInfo button" v-on:click="abonate">
+                    <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Abonar </p>
+                </div>
+                
+                <div class="basicInfo button" style="background-color: var(--soil-error);" v-if="!data?.dead" v-on:click="kill(true)">
+                    <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Está muerto </p>
+                </div>
+                <div class="basicInfo button" style="background-color: var(--soil-accent-hover);" v-else v-on:click="kill(false)">
+                    <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Está vivo </p>
+                </div>
+                
                 <div class="editPanelRow">
                     <p class="marginless treeSpeciesText" style="font-style: normal;"> Nombre: </p>
                     <input class="input" type="text" v-model="newName">
@@ -60,10 +117,10 @@ onMounted(async () => {
                 
                 <div class="editPanelRow">
                     <p class="marginless treeSpeciesText" style="font-style: normal;"> Año de comienzo: </p>
-                    <input class="input" type="date">
+                    <input class="input" type="number" v-model="treeAge">
                 </div>
-
-                <div class="acceptButton">
+                
+                <div class="acceptButton" v-on:click="saveData">
                     <p class="marginless treeSpeciesText" style="font-style: normal;"> Guardar </p>
                 </div>
             </form>
@@ -80,9 +137,12 @@ onMounted(async () => {
 
         <div class="info">
             <div class="basicInfo">
-                <p class="marginless" > Edad: {{data?.year_planted ? data?.year_planted : "Sin datos"}} </p>
+                <p class="marginless" v-if="data?.year_planted == undefined"> Edad: Sin datos </p>
+                <p class="marginless" v-else> Edad: {{currentYear - data.year_planted}} años ({{data.year_planted}}) </p>
+                
                 <p class="marginless" > Último transplante: {{data?.last_transplanted ? data?.last_transplanted : "Sin datos"}} </p>
                 <p class="marginless" > Último abono: {{data?.last_abonated ? data?.last_abonated : "Sin datos"}} </p>
+                <p class="marginless" > Estado: {{data?.dead ? "Muerto" : "Vivo"}} </p>
             </div>
         </div>
     </BaseBonsaiPage>
@@ -199,6 +259,8 @@ onMounted(async () => {
 
     font-family: "IBM Plex Serif", serif;
     font-weight: 500;
+
+    margin-bottom: 20px;
 }
 
 .blackBackground {
@@ -289,5 +351,14 @@ onMounted(async () => {
 
 .acceptButton:hover {
     background-color: var(--soil-accent-hover);
+}
+
+.button {
+    box-shadow: 0 4px 8px 2px #0003, 0 6px 20px 2px #00000030;
+    transition: 0.3s ease;
+}
+
+.button:hover {
+    box-shadow: 0 4px 8px 10px #0003, 0 6px 20px 10px #00000030;
 }
 </style>
