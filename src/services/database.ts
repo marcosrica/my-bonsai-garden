@@ -14,7 +14,7 @@ export async function initDatabase(): Promise<void> {
   await db.open();
 
   //Dropping the tables for easier development
-  await dropTables(db);
+  //await dropTables(db);
   
   //Creating the tables if they don't exist
   await db.execute(`
@@ -51,9 +51,9 @@ export async function getMenuTrees() {
   return db.query('SELECT id, name, image, species FROM trees');
 }
 
-export async function getAllTrees() {
+export async function getTreeData(id: string) {
   const db = await getConnection();
-  return db.query('SELECT * FROM trees ORDER BY created_at DESC');
+  return db.query('SELECT * FROM trees WHERE id = ?', [id]);
 }
 
 export async function addNewTree(name: string, species: string, imgPath:string): Promise<boolean> {

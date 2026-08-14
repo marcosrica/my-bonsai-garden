@@ -1,17 +1,33 @@
 <script setup lang="ts">
 import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
+import type fullTreeData from '@/interfaces/FullTreeData';
+import { useFullTreeStore } from '@/stores/trees';
+import { Capacitor } from '@capacitor/core';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
+const treeStore = useFullTreeStore();
+let id = useRoute().query.id;
+const data = ref<fullTreeData>();
 
+onMounted(async () => {
+    if (id == undefined) {
+        id = "-1";
+    }
+  
+    await treeStore.init(id as string);
+    data.value = treeStore.tree;
+})
 </script>
 
 <template>
     <BaseBonsaiPage>
         <div class="header">
-            <div class="treeImage" />
+            <div class="treeImage" :style="{ backgroundImage: `url(${Capacitor.convertFileSrc(data?.image || '')})` }"/>
 
             <div class="treeId">
-                <p class="marginless treeNameText" style="font-size: 40px;"> Tree 1 </p>
-                <p class="marginless treeSpeciesText"> Aspaleocotus malacateaus </p>
+                <p class="marginless treeNameText" style="font-size: 40px;"> {{data?.name}} </p>
+                <p class="marginless treeSpeciesText"> {{data?.species}} </p>
             </div>
         </div>
 
@@ -54,6 +70,7 @@ import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
 .treeNameText {
     font-family: 'IBM Plex Serif', serif;
     font-weight: 700;
+    z-index: 10;
 }
 
 .treeSpeciesText {
@@ -68,8 +85,9 @@ import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
     position: absolute;
     top: 0px;
     right: 0px;
-    background-image: url('/icons/Wallpaper_Phone_1.png');
     background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     
     mask-image: url('/icons/BonsaiMask.svg');
     mask-size: contain;

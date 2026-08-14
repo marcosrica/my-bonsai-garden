@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
-import { getAllTrees, getMenuTrees, initDatabase } from "@/services/database";
+import { getMenuTrees, getTreeData, initDatabase } from "@/services/database";
 import type treeMenuData from "@/interfaces/TreeMenuData";
+import type fullTreeData from "@/interfaces/FullTreeData";
 
 export interface Tree {
   id: number;
@@ -25,6 +26,26 @@ export const useTreeStore = defineStore('trees', {
       this.loading = true;
       const result = await getMenuTrees();
       this.trees = result.values as treeMenuData[];
+      this.loading = false;
+    },
+  },
+});
+
+export const useFullTreeStore = defineStore('tree', {
+  state: () => ({
+    tree: undefined as fullTreeData | undefined,
+    loading: false,
+  }),
+  actions: {
+    async init(id: string) {
+      await initDatabase();
+      await this.getData(id);
+    },
+    
+    async getData(id: string) {
+      this.loading = true;
+      const result = await getTreeData(id);
+      this.tree = (result.values as fullTreeData[])[0];
       this.loading = false;
     },
   },
