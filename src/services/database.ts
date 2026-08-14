@@ -21,9 +21,12 @@ export async function initDatabase(): Promise<void> {
     CREATE TABLE IF NOT EXISTS trees (
       id INTEGER PRIMARY KEY NOT NULL,
       name TEXT NOT NULL,
+      description TEXT,
       image TEXT NOT NULL,
       species TEXT NOT NULL,
       year_planted INTEGER,
+      last_transplanted TEXT,
+      last_abonated TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
   `);
@@ -45,15 +48,17 @@ export async function getConnection(): Promise<SQLiteDBConnection> {
   return db;
 }
 
-
 export async function getMenuTrees() {
   const db = await getConnection();
-  return db.query('SELECT id, name, image, species FROM trees');
+  return await db.query('SELECT id, name, image, species FROM trees');
 }
 
 export async function getTreeData(id: string) {
   const db = await getConnection();
-  return db.query('SELECT * FROM trees WHERE id = ?', [id]);
+  console.log("Searching for a tree with id " + id);
+  const result = await db.query('SELECT * FROM trees WHERE id = ?', [id]);
+  console.log(result);
+  return result;
 }
 
 export async function addNewTree(name: string, species: string, imgPath:string): Promise<boolean> {
