@@ -50,7 +50,7 @@
                 const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
                 imageDataUrl.value = croppedDataUrl;
                 // Extract base64 string (remove prefix) for saving
-                imageBase64.value = croppedDataUrl.split(',')[1];
+                imageBase64.value = croppedDataUrl.split(',')[1] || "";
                 // Close cropper modal
                 showCropper.value = false;
             }
@@ -140,17 +140,18 @@
         <div v-if="showCropper" class="cropper-overlay">
             <div class="cropper-modal">
                 <h2>Recorta la imagen</h2>
-                <Cropper
-                ref="cropperRef"
-                :src="originalImageDataUrl"
-                :stencil-props="{}"></Cropper>   <!-- square crop -->
-                
+
                 <div class="cropper-actions">
                     <button @click="cancelCrop" class="cancel-btn">Cancelar</button>
                     <button @click="confirmCrop" class="crop-btn" :disabled="cropping">
                         {{ cropping ? 'Procesando...' : 'Recortar' }}
                     </button>
                 </div>
+                
+                <Cropper
+                ref="cropperRef"
+                :src="originalImageDataUrl"
+                :stencil-props="{}"></Cropper>
             </div>
         </div>
     </div>
