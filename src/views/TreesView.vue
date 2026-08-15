@@ -51,6 +51,7 @@ const backUp = async () => {
 const restore = async () => {
     try {
         const result = await restoreBackup();
+        await getTrees();
     }
     catch (error) {
         console.error('restoration failed:', error);
@@ -58,20 +59,10 @@ const restore = async () => {
     }
 }
 
+
 onMounted(async () => {
     await getTrees();
-    console.log("trees logged");
 })
-
-// 
-/*
-<div v-if="store.loading">Loading...</div>
-    <ul v-else>
-      <li v-for="tree in store.trees" :key="tree.id">
-        {{ tree.species }} – Planted {{ tree.year_planted }}
-      </li>
-    </ul>
-*/
 </script>
 
 <template>
@@ -111,7 +102,7 @@ onMounted(async () => {
             </div>
 
             <div class="TreeDiv" v-on:click="restore"> 
-                <div class="backupImg"/>
+                <div class="backupImg restoreImg"/>
                 <div class="TreeData">
                     <p class="marginless treeNameText" style="font-size: 25px;"> Restaurar una copia de seguridad </p>
                 </div>
@@ -262,5 +253,9 @@ onMounted(async () => {
     mask-image: url('/icons/Backup.svg');
     mask-size: contain;
     margin-right: 10px;
+}
+
+.restoreImg {
+    mask-image: url('/icons/Restore.svg');
 }
 </style>
