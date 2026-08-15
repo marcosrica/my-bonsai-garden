@@ -79,7 +79,7 @@ const tick = () => {
 
         if (abonateCounter.value >= 5000) {
             abonateCounter.value = 0;
-            showEditPanel.value = false;
+            hideEditPanel();
             abonate();
         }
     }
@@ -90,9 +90,9 @@ const tick = () => {
     if (transplantPressed.value) {
         transplantCounter.value = Math.min(5000, transplantCounter.value + 10);
 
-        if (abonateCounter.value >= 5000) {
+        if (transplantCounter.value >= 5000) {
             transplantCounter.value = 0;
-            showEditPanel.value = false;
+            hideEditPanel();
             transplant();
         }
     }

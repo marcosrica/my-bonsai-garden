@@ -104,7 +104,7 @@ export async function changeTreeInit(id: string, year: number): Promise<boolean>
 export async function abonateTree(id: string) {
   const db = await getConnection();
   let date: Date = new Date(Date.now());
-  const formattedDate = date.getMonth() + "/" + date.getFullYear();
+  const formattedDate = (date.getMonth() + 1) + "/" + date.getFullYear();
 
   const result = await db.run(`
     UPDATE trees SET last_abonated = ? WHERE id = ?
@@ -117,7 +117,7 @@ export async function abonateTree(id: string) {
 export async function transplantTree(id: string) {
   const db = await getConnection();
   let date: Date = new Date(Date.now());
-  const formattedDate = date.getMonth() + "/" + date.getFullYear();
+  const formattedDate = (date.getMonth() + 1) + "/" + date.getFullYear();
 
   const result = await db.run(`
     UPDATE trees SET last_transplanted = ? WHERE id = ?
