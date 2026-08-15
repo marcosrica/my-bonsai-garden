@@ -43,8 +43,7 @@ export async function initDatabase(): Promise<void> {
       FOREIGN KEY (tree_id) REFERENCES trees(id)
     );
   `);
-  */
-
+*/
 }
 
 export async function getConnection(): Promise<SQLiteDBConnection> {
@@ -138,7 +137,27 @@ export async function killTree(id: string, value:boolean) {
   return finalId != undefined; 
 }
 
+export async function changeTreeName(id: string, newName: string) {
+  const db = await getConnection();
 
+  const result = await db.run(`
+    UPDATE trees SET name = ? WHERE id = ?
+    `, [newName, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
+export async function changeTreeSpecies(id: string, newSpecies: string) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    UPDATE trees SET species = ? WHERE id = ?
+    `, [newSpecies, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
 
 const dropTables = async (database: SQLiteDBConnection) => {
   await database.execute(`DROP TABLE IF EXISTS trees`);

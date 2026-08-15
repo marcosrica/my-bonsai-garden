@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
 import type fullTreeData from '@/interfaces/FullTreeData';
-import { abonateTree, changeTreeInit, killTree, transplantTree } from '@/services/database';
+import { abonateTree, changeTreeInit, changeTreeName, changeTreeSpecies, killTree, transplantTree } from '@/services/database';
 import { useFullTreeStore } from '@/stores/trees';
 import { Capacitor } from '@capacitor/core';
 import { onMounted, ref } from 'vue';
@@ -53,10 +53,18 @@ const saveData = async () => {
         if (data.value.year_planted != treeAge.value) {
             result1 = await changeTreeInit(_id, treeAge.value);
         }
+
+        if (data.value.name != newName.value) {
+            result2 = await changeTreeName(_id, newName.value);
+        }
+
+        if (data.value.species != newSpecies.value) {
+            result3 = await changeTreeSpecies(_id, newSpecies.value) 
+        }
     }
 
     if (result1 && result2 && result3) {
-        showEditPanel.value = false;
+        hideEditPanel();
         await getData(_id);
     }
     else {
@@ -70,6 +78,7 @@ const getData = async (id: string) => {
 
     newName.value = data.value?.name || "";
     newSpecies.value = data.value?.species || "";
+    treeAge.value = data.value?.year_planted || -1;
 }
 
 const tick = () => {
@@ -101,32 +110,32 @@ const tick = () => {
 }
 
 const abonateTreePressed = (e: PointerEvent) => {
-  e.preventDefault();
-  abonatePressed.value = true;
+    e.preventDefault();
+    abonatePressed.value = true;
 }
 
 const abonateTreeNotPressed = (e: PointerEvent) => {
-  e.preventDefault();
-  abonatePressed.value = false;
+    e.preventDefault();
+    abonatePressed.value = false;
 }
 
 const transplantTreePressed = (e: PointerEvent) => {
-  e.preventDefault();
-  transplantPressed.value = true;
+    e.preventDefault();
+    transplantPressed.value = true;
 }
 
 const transplantTreeNotPressed = (e: PointerEvent) => {
-  e.preventDefault();
-  transplantPressed.value = false;
+    e.preventDefault();
+    transplantPressed.value = false;
 }
 
 const hideEditPanel = () => {
-  transplantPressed.value = false;
-  transplantCounter.value = 0;
-  abonatePressed.value = false;
-  abonateCounter.value = 0;
-
-  showEditPanel.value = false;
+    transplantPressed.value = false;
+    transplantCounter.value = 0;
+    abonatePressed.value = false;
+    abonateCounter.value = 0;
+  
+    showEditPanel.value = false;
 }
 
 onMounted(async () => {
@@ -433,7 +442,7 @@ onMounted(async () => {
     transition: 0.3s ease;
     user-select: none;
     -webkit-user-select: none;
-    tocuh-action: none;
+    touch-action: none;
     overflow: hidden;
 }
 
