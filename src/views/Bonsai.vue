@@ -74,9 +74,9 @@ const getData = async (id: string) => {
 
 const tick = () => {
     if (abonatePressed.value) {
-        abonateCounter.value = Math.min(5000, abonateCounter.value + 10);
+        abonateCounter.value = Math.min(2000, abonateCounter.value + 10);
 
-        if (abonateCounter.value >= 5000) {
+        if (abonateCounter.value >= 2000) {
             abonateCounter.value = 0;
             hideEditPanel();
             abonate();
@@ -87,9 +87,9 @@ const tick = () => {
     }
 
     if (transplantPressed.value) {
-        transplantCounter.value = Math.min(5000, transplantCounter.value + 10);
+        transplantCounter.value = Math.min(2000, transplantCounter.value + 10);
 
-        if (transplantCounter.value >= 5000) {
+        if (transplantCounter.value >= 2000) {
             transplantCounter.value = 0;
             hideEditPanel();
             transplant();
@@ -160,7 +160,7 @@ onMounted(async () => {
                     @pointerup=    "transplantTreeNotPressed"
                     @pointercancel="transplantTreeNotPressed"
                     @pointerleave= "transplantTreeNotPressed">
-                    <div class="progress-fill" :style="{ width: `${(transplantCounter / 5000) * 100}%` }" />
+                    <div class="progress-fill" :style="{ width: `${(transplantCounter / 2000) * 100}%` }" />
                     <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Transplantar </p>
                 </div>
                 
@@ -168,7 +168,7 @@ onMounted(async () => {
                     @pointerup=    "abonateTreeNotPressed"
                     @pointercancel="abonateTreeNotPressed"
                     @pointerleave= "abonateTreeNotPressed">
-                    <div class="progress-fill" :style="{ width: `${(abonateCounter / 5000) * 100}%` }" />
+                    <div class="progress-fill" :style="{ width: `${(abonateCounter / 2000) * 100}%` }" />
                     <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%; position: relative; z-index: 1;""> Abonar </p>
                 </div>
                 
