@@ -78,6 +78,18 @@ export async function addNewTree(name: string, species: string, imgPath:string):
   return id != undefined;
 }
 
+export async function addFullTreeData(name: string, description:string, image:string, species: string, year_planted: number, last_transplanted: string, last_abonated:string, created_at: string, dead: boolean) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    INSERT INTO trees (name, description, image, species, year_planted, last_transplanted, last_abonated, created_at, dead) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [name, description, image, species, year_planted, last_transplanted, last_abonated, created_at, dead]);
+
+  const id = result.changes?.lastId;
+
+  return id != undefined;
+}
+
 export async function changeTreeInit(id: string, year: number): Promise<boolean> {
   const db = await getConnection();
 

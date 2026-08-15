@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router';
 import { useTreeStore } from '@/stores/trees';
 import type treeMenuData from '@/interfaces/TreeMenuData';
 import { Capacitor } from '@capacitor/core';
+import { createBackup, restoreBackup } from '@/services/backup';
 
 const router = useRouter();
 const treeStore = useTreeStore();
@@ -32,6 +33,29 @@ const treeAdded = () => {
 
 const inspectTree = (id: number) => {
   router.push("/bonsai?id=" + id);
+}
+
+const backUp = async () => {
+    try {
+        const result = await createBackup();
+        if (result != "") {
+            alert("Copia guardada");
+        }
+    }
+    catch (error) {
+        console.error('Backup failed:', error);
+        alert('Error al crear la copia de seguridad');
+    }
+}
+
+const restore = async () => {
+    try {
+        const result = await restoreBackup();
+    }
+    catch (error) {
+        console.error('restoration failed:', error);
+        alert('Error al recuperar la copia de seguridad');
+    }
 }
 
 onMounted(async () => {
@@ -76,6 +100,24 @@ onMounted(async () => {
 
                 <div class="RightArrow" />
             </div>
+
+             <div class="TreeDiv" v-on:click="backUp"> 
+                <div class="backupImg"/>
+                <div class="TreeData">
+                    <p class="marginless treeNameText" style="font-size: 25px;"> Hacer una copia de seguridad </p>
+                </div>
+
+                <div class="RightArrow" />
+            </div>
+
+            <div class="TreeDiv" v-on:click="restore"> 
+                <div class="backupImg"/>
+                <div class="TreeData">
+                    <p class="marginless treeNameText" style="font-size: 25px;"> Restaurar una copia de seguridad </p>
+                </div>
+
+                <div class="RightArrow" />
+            </div>
         </div>
     </BasePage>
 </template>
@@ -113,7 +155,6 @@ onMounted(async () => {
     width: 100%;
     box-sizing: border-box;
     margin-bottom: 105px;
-    cursor: pointer;
 }
 
 .TreeDiv {
@@ -128,6 +169,7 @@ onMounted(async () => {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 
     margin-bottom: 10px;
     border-radius: 10px;
@@ -211,5 +253,14 @@ onMounted(async () => {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+}
+
+.backupImg {
+    height: 60px;
+    aspect-ratio: 1;
+    background-color: black;
+    mask-image: url('/icons/Backup.svg');
+    mask-size: contain;
+    margin-right: 10px;
 }
 </style>
