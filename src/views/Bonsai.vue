@@ -18,6 +18,13 @@ const data = ref<fullTreeData>();
 
 const currentYear:number = new Date(Date.now()).getFullYear();
 
+const abonateCounter = ref<number>(0);
+const abonatePressed = ref<boolean>(false);
+
+const transplantCounter = ref<number>(0);
+const transplantPressed = ref<boolean>(false);
+
+
 const transplant = async () => {
     const _id = id?.toString() || "";
     const response: boolean = await transplantTree(_id);
@@ -65,6 +72,64 @@ const getData = async (id: string) => {
     newSpecies.value = data.value?.species || "";
 }
 
+
+const tick = () => {
+    if (abonatePressed.value) {
+        abonateCounter.value = Math.min(5000, abonateCounter.value + 10);
+
+        if (abonateCounter.value >= 5000) {
+            abonateCounter.value = 0;
+            showEditPanel.value = false;
+            abonate();
+        }
+    }
+    else {
+        abonateCounter.value = Math.max(0, abonateCounter.value - 10);
+    }
+
+    if (transplantPressed.value) {
+        transplantCounter.value = Math.min(5000, transplantCounter.value + 10);
+
+        if (abonateCounter.value >= 5000) {
+            transplantCounter.value = 0;
+            showEditPanel.value = false;
+            transplant();
+        }
+    }
+    else {
+        transplantCounter.value = Math.max(0, transplantCounter.value - 10);
+    }
+}
+
+const abonateTreePressed = (e: PointerEvent) => {
+  e.preventDefault();
+  abonatePressed.value = true;
+}
+
+const abonateTreeNotPressed = (e: PointerEvent) => {
+  e.preventDefault();
+  abonatePressed.value = false;
+}
+
+const transplantTreePressed = (e: PointerEvent) => {
+  e.preventDefault();
+  transplantPressed.value = true;
+}
+
+const transplantTreeNotPressed = (e: PointerEvent) => {
+  e.preventDefault();
+  transplantPressed.value = false;
+}
+
+const hideEditPanel = () => {
+  transplantPressed.value = false;
+  transplantCounter.value = 0;
+  abonatePressed.value = false;
+  abonateCounter.value = 0;
+
+  showEditPanel.value = false;
+}
+
 onMounted(async () => {
     if (id == undefined) {
         id = "-1";
@@ -72,6 +137,8 @@ onMounted(async () => {
 
     await treeStore.init(id as string);
     await getData(id as string);
+
+    setInterval(tick, 10);
 })
 </script>
 
@@ -81,21 +148,29 @@ onMounted(async () => {
             <div class="editIcon"/>
         </div>
 
-        <div class="blackBackground" v-if="showEditPanel" v-on:click.self="showEditPanel = false">
+        <div class="blackBackground" v-if="showEditPanel" v-on:click.self="hideEditPanel">
             <form class="editPanelBackground">
                 <div class="editPanelHeader">
                     <p class="marginless treeNameText" style="font-size: 40px;"> Editar </p>
-                    <div class="closeEditPanel" v-on:click="showEditPanel = false">
+                    <div class="closeEditPanel" v-on:click="hideEditPanel">
                         <div class="editIcon" style="mask-image: url('/icons/Cross.svg');"/>
                     </div>
                 </div>
 
-                <div class="basicInfo button" v-on:click="transplant" style="margin-top: 20px;">
+                <div :class="['basicInfo', 'button', transplantPressed ? 'button-selected' : '']" @pointerdown="transplantTreePressed"
+                    @pointerup=    "transplantTreeNotPressed"
+                    @pointercancel="transplantTreeNotPressed"
+                    @pointerleave= "transplantTreeNotPressed">
+                    <div class="progress-fill" :style="{ width: `${(transplantCounter / 5000) * 100}%` }" />
                     <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Transplantar </p>
                 </div>
                 
-                <div class="basicInfo button" v-on:click="abonate">
-                    <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Abonar </p>
+                <div :class="['basicInfo', 'button', abonatePressed ? 'button-selected' : '']" @pointerdown="abonateTreePressed"
+                    @pointerup=    "abonateTreeNotPressed"
+                    @pointercancel="abonateTreeNotPressed"
+                    @pointerleave= "abonateTreeNotPressed">
+                    <div class="progress-fill" :style="{ width: `${(abonateCounter / 5000) * 100}%` }" />
+                    <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%; position: relative; z-index: 1;""> Abonar </p>
                 </div>
                 
                 <div class="basicInfo button" style="background-color: var(--soil-error);" v-if="!data?.dead" v-on:click="kill(true)">
@@ -251,6 +326,7 @@ onMounted(async () => {
     justify-content: flex-start;
     align-items: flex-start;
     padding: 10px;
+    position: relative;
 
     box-sizing: border-box;
     width: 100%;
@@ -356,9 +432,23 @@ onMounted(async () => {
 .button {
     box-shadow: 0 4px 8px 2px #0003, 0 6px 20px 2px #00000030;
     transition: 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    tocuh-action: none;
+    overflow: hidden;
 }
 
-.button:hover {
+.button-selected {
     box-shadow: 0 4px 8px 10px #0003, 0 6px 20px 10px #00000030;
+}
+
+.progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;            
+  background-color:var(--soil-error);
+  z-index: 0;              
+  pointer-events: none;
 }
 </style>
