@@ -72,7 +72,6 @@ const getData = async (id: string) => {
     newSpecies.value = data.value?.species || "";
 }
 
-
 const tick = () => {
     if (abonatePressed.value) {
         abonateCounter.value = Math.min(5000, abonateCounter.value + 10);

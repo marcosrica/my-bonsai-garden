@@ -139,7 +139,12 @@
         <!-- Crop modal -->
         <div v-if="showCropper" class="cropper-overlay">
             <div class="cropper-modal">
-                <h2>Recorta la imagen</h2>
+                <h2 style="margin-top: 0px;margin-bottom: 0px;">Recorta la imagen</h2>
+
+                <Cropper
+                ref="cropperRef"
+                :src="originalImageDataUrl"
+                :stencil-props="{}"></Cropper>
 
                 <div class="cropper-actions">
                     <button @click="cancelCrop" class="cancel-btn">Cancelar</button>
@@ -147,11 +152,6 @@
                         {{ cropping ? 'Procesando...' : 'Recortar' }}
                     </button>
                 </div>
-                
-                <Cropper
-                ref="cropperRef"
-                :src="originalImageDataUrl"
-                :stencil-props="{}"></Cropper>
             </div>
         </div>
     </div>
@@ -159,7 +159,8 @@
 
 <style scoped>
     .feed-form {
-        width: 100%;
+        width: 90%;
+        max-height: 60%;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -170,12 +171,16 @@
     .image-preview {
         position: relative;
         width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .image-preview img {
         box-sizing: border-box;
-        width: 100%;
         border-radius: 8px;
+        height: 40dvh;
+        aspect-ratio: initial;
     }
     
     .image-preview button {
@@ -227,53 +232,56 @@
     }
 
     .cropper-overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
+        max-height: 60dvh;
+        position: fixed;
+        top: 20dvh; left: 0;
+        width: 100%;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
     }
     
     .cropper-modal {
-      background: var(--soil-surface);
-      border-radius: 12px;
-      padding: 1rem;
-      width: 90%;
-      max-width: 500px;
-      max-height: 90vh;
-      overflow-y: auto;
+        background: var(--soil-surface);
+        border-radius: 12px;
+        padding: 1rem;
+        width: 90%;
+        max-width: 500px;
+        overflow-y: auto;
     }
     
     .cropper-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-      margin-top: 1rem;
+        display: flex;
+        justify-content: space-around;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        
+        width: 100%;
     }
     
     .cancel-btn, .crop-btn {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
     }
     
     .cancel-btn {
-      background: var(--soil-secondary);
-      color: white;
+        background: var(--soil-secondary);
+        color: white;
     }
     
     .crop-btn {
-      background: var(--soil-primary);
-      color: white;
+        background: var(--soil-primary);
+        color: white;
     }
     
     .crop-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+        opacity: 0.6;
+        cursor: not-allowed;
     }
 </style>

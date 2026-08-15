@@ -107,7 +107,7 @@ const goToReminders = () => {
     align-items: center;
 
     cursor: pointer;
-    z-index: 10000000;
+    z-index: 100;
 }
 
 .Bonsai {
