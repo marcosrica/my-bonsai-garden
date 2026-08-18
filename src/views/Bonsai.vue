@@ -6,6 +6,12 @@ import { useFullTreeStore } from '@/stores/trees';
 import { Capacitor } from '@capacitor/core';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const addEntry = () => {
+    router.push("/addEntry?id=" + id);
+}
 
 const showEditPanel = ref<boolean>(false);
 const treeAge = ref<number>(-1);
@@ -151,7 +157,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <BaseBonsaiPage>
+    <BaseBonsaiPage :addClicked="addEntry">
         <div class="editButton" v-on:click="showEditPanel = true">
             <div class="editIcon"/>
         </div>

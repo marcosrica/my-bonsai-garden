@@ -26,3 +26,47 @@ export async function pickImage(): Promise<CapturedImage | null> {
     return null;
   }
 }
+
+export async function shootImage(): Promise<CapturedImage | null> {
+  try {
+    const image = await Camera.getPhoto({
+      quality: 85,
+      allowEditing: false,
+      source: CameraSource.Camera,
+      resultType: CameraResultType.Base64,   // get base64 string
+    });
+
+    const base64 = image.base64String;
+    if (!base64) return null;
+
+    return {
+      base64,
+      dataUrl: `data:image/jpeg;base64,${base64}`,
+    };
+  } catch (error) {
+    console.error('Error picking image:', error);
+    return null;
+  }
+}
+
+export async function chooseImage(): Promise<CapturedImage | null> {
+  try {
+    const image = await Camera.getPhoto({
+      quality: 85,
+      allowEditing: false,
+      source: CameraSource.Photos,
+      resultType: CameraResultType.Base64,   // get base64 string
+    });
+
+    const base64 = image.base64String;
+    if (!base64) return null;
+
+    return {
+      base64,
+      dataUrl: `data:image/jpeg;base64,${base64}`,
+    };
+  } catch (error) {
+    console.error('Error picking image:', error);
+    return null;
+  }
+}

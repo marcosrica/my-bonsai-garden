@@ -32,7 +32,6 @@ export async function initDatabase(): Promise<void> {
     );
   `);
 
-  /*
   await db.execute(`
     CREATE TABLE IF NOT EXISTS feed (
       id INTEGER PRIMARY KEY,
@@ -43,7 +42,6 @@ export async function initDatabase(): Promise<void> {
       FOREIGN KEY (tree_id) REFERENCES trees(id)
     );
   `);
-*/
 }
 
 export async function getConnection(): Promise<SQLiteDBConnection> {
@@ -158,6 +156,42 @@ export async function changeTreeSpecies(id: string, newSpecies: string) {
   const finalId = result.changes?.lastId;
   return finalId != undefined; 
 }
+
+export async function changeTreeImage(id: string, newImageUrl: string) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    UPDATE trees SET image = ? WHERE id = ?
+  `, [newImageUrl, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
+export async function addEntry(treeId: string, imagePath: string, text: string) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    INSERT INTO feed (tree_id, image_path, text) VALUES (?, ?, ?)
+  `, [treeId, imagePath, text]);
+  
+  const id = result.changes?.lastId;
+  
+  return id != undefined;
+}
+
+export async function addEntry_withTime(treeId: string, imagePath: string, text: string, createdAt:string) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    INSERT INTO feed (tree_id, image_path, text, created_at) VALUES (?, ?, ?, ?)
+  `, [treeId, imagePath, text, createdAt]);
+  
+  const id = result.changes?.lastId;
+  
+  return id != undefined;
+}
+
 
 const dropTables = async (database: SQLiteDBConnection) => {
   await database.execute(`DROP TABLE IF EXISTS trees`);

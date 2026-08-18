@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import TreesView from '@/views/TreesView.vue'
 import Reminders from '@/views/Reminders.vue'
 import Bonsai from '@/views/Bonsai.vue'
+import AddEntry from '@/views/AddEntry.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/bonsai',
       name: 'bonsai',
       component: Bonsai
+    },
+    {
+      path: '/addEntry',
+      name: 'Add entry',
+      component: AddEntry,
     }
   ],
 })

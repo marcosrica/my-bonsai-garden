@@ -4,7 +4,11 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const props = defineProps<{
-  addClicked: () => void,
+  goForward: () => void,
+  goBackwards: () => void,
+
+  maxPos: number,
+  position: number,
 }>();
 
 const goHome = () => {
@@ -23,12 +27,12 @@ const goToReminders = () => {
     </div>
 
     <div class="bottomBar">
-        <div class="AddBonsaiButtonWrapper" v-on:click="goHome">
-            <div class="Home"/>
+        <div class="AddBonsaiButtonWrapper" >
+            <div :class="['Back', position == 0 ? 'home' : '']" v-on:click="goBackwards"/>
         </div>
         
-        <div class="AddBonsaiButtonWrapper" v-on:click="() => { addClicked(); }">
-            <div class="Picture"/>
+        <div class="AddBonsaiButtonWrapper" v-on:click="goForward">
+            <div :class="['Front', position == props.maxPos ? 'done' : '']"/>
         </div>
     </div>
   </div>
@@ -49,13 +53,12 @@ const goToReminders = () => {
 }
 
 .background {
-    width: 100%;
     min-height: 100dvh;
     overflow: auto;
+    width: 100%;
+    
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    flex-direction: row;
 }
 
 .bottomBar {
@@ -87,23 +90,34 @@ const goToReminders = () => {
     align-items: center;
 
     cursor: pointer;
+    z-index: 100;
 }
 
-.Home {
+.Back {
     height: 70%;
     aspect-ratio: 1;
     background-color: black;
-    mask-image: url('/icons/House.svg');
+    mask-image: url('/icons/FullLeftArrow.svg');
     mask-size: contain;
     cursor: pointer;
+    z-index: 1;
 }
 
-.Picture {
+.Front {
     height: 70%;
     aspect-ratio: 1;
     background-color: black;
-    mask-image: url('/icons/CameraPlus.svg');
+    mask-image: url('/icons/FullRightArrow.svg');
     mask-size: contain;
     cursor: pointer;
+    z-index: 1;
+}
+
+.home {
+    mask-image: url('/icons/Cross.svg');
+}
+
+.done {
+    mask-image: url('/icons/Tick.svg');
 }
 </style>
