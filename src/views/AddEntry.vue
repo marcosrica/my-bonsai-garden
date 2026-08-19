@@ -107,8 +107,8 @@ function cancelCrop() {
 
 async function saveEntry(): Promise<boolean> {
     //Avoiding empty responses
-    if (!imageBase64.value) {
-        alert('Por favor, añada una imagen');
+    if (!imageBase64.value && !(notes.value!="")) {
+        alert('Por favor, añada una imagen o un texto');
         return false;
     }
 
@@ -122,11 +122,11 @@ async function saveEntry(): Promise<boolean> {
             const fileName = `tree_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
             const uri = await savePhoto(imageBase64.value, fileName);
             imagePath = uri;
-        }
 
-        if (imagePath == null) {
-            alert("La imagen no se ha podido guardar");
-            return false;
+            if (imagePath == null) {
+                alert("La imagen no se ha podido guardar");
+                return false;
+            }
         }
         
         //Adding entry to the database
