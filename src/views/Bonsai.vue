@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
+import type Entries from '@/interfaces/Entries';
 import type fullTreeData from '@/interfaces/FullTreeData';
 import { abonateTree, changeTreeInit, changeTreeName, changeTreeSpecies, killTree, transplantTree } from '@/services/database';
-import { useFullTreeStore } from '@/stores/trees';
+import { useFeedStore, useFullTreeStore } from '@/stores/trees';
 import { Capacitor } from '@capacitor/core';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -30,6 +31,8 @@ const abonatePressed = ref<boolean>(false);
 const transplantCounter = ref<number>(0);
 const transplantPressed = ref<boolean>(false);
 
+const feedStore = useFeedStore();
+const feedData = ref<Entries[]>([]);
 
 const transplant = async () => {
     const _id = id?.toString() || "";
@@ -85,6 +88,11 @@ const getData = async (id: string) => {
     newName.value = data.value?.name || "";
     newSpecies.value = data.value?.species || "";
     treeAge.value = data.value?.year_planted || -1;
+}
+
+const getFeed = async (id: string) => {
+    await feedStore.getData(id);
+    feedData.value = feedStore.entries;
 }
 
 const tick = () => {
@@ -152,16 +160,21 @@ onMounted(async () => {
     await treeStore.init(id as string);
     await getData(id as string);
 
+    await feedStore.init(id as string);
+    await getFeed(id as string);
+
     setInterval(tick, 10);
 })
 </script>
 
 <template>
     <BaseBonsaiPage :addClicked="addEntry">
+        <!-- Edit button -->
         <div class="editButton" v-on:click="showEditPanel = true">
             <div class="editIcon"/>
         </div>
 
+        <!-- Edit panel -->
         <div class="blackBackground" v-if="showEditPanel" v-on:click.self="hideEditPanel">
             <form class="editPanelBackground">
                 <div class="editPanelHeader">
@@ -214,7 +227,8 @@ onMounted(async () => {
                 </div>
             </form>
         </div>
-        
+
+        <!-- Header panel -->
         <div class="header">
             <div class="treeImage" :style="{ backgroundImage: `url(${Capacitor.convertFileSrc(data?.image || '')})` }"/>
 
@@ -225,7 +239,7 @@ onMounted(async () => {
         </div>
 
         <div class="info">
-            <div class="basicInfo">
+            <div class="basicInfo" style="margin-bottom: 0px;">
                 <p class="marginless" v-if="data?.year_planted == undefined"> Edad: Sin datos </p>
                 <p class="marginless" v-else> Edad: {{currentYear - data.year_planted}} años ({{data.year_planted}}) </p>
                 
@@ -234,6 +248,24 @@ onMounted(async () => {
                 <p class="marginless" > Estado: {{data?.dead ? "Muerto" : "Vivo"}} </p>
             </div>
         </div>
+
+        <div :class="['info', entry.id == feedData[feedData.length - 1]?.id ? 'lastEntry' : '']" v-for="entry in feedData">
+            <div class="entryTitle" style="margin-bottom: 10px;">
+                <div clasS="datePanel">
+                    <p class="marginless"> {{entry.created_at}} </p>
+                </div>
+
+                <div class="moreInfoButton">
+                    <div class="moreInfoIcon"/>
+                </div>
+            </div>
+            <div v-if="entry.image_path != ''" class="entryImage" :style="{ backgroundImage: `url(${Capacitor.convertFileSrc(entry.image_path)})`, marginBottom: `10px` }"/>
+            <div v-if="entry.text != ''" class="basicInfo" style="margin-bottom: 0px;">
+                <p class="marginless"> {{entry.text}} </p>
+            </div>
+        </div>
+
+        <div style="width: 100%; height: 110px;"/>
     </BaseBonsaiPage>
 </template>
 
@@ -331,7 +363,7 @@ onMounted(async () => {
     padding: 10px;
     
     border-radius: 20px;
-    margin-bottom: 110px;
+    margin-bottom: 40px;
 }
 
 .basicInfo {
@@ -345,12 +377,12 @@ onMounted(async () => {
     box-sizing: border-box;
     width: 100%;
     background-color: var(--soil-clay);
-    border-radius: 20px;
+    border-radius: 10px;
 
     font-family: "IBM Plex Serif", serif;
     font-weight: 500;
 
-    margin-bottom: 20px;
+    margin-bottom: 40px;
 }
 
 .blackBackground {
@@ -464,5 +496,65 @@ onMounted(async () => {
   background-color:var(--soil-error);
   z-index: 0;              
   pointer-events: none;
+}
+
+.entryImage {
+    width: 100%;
+    height: 50dvh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 8px;
+}
+
+.lastEntry {
+    margin-bottom: 110px;
+}
+
+.entryTitle {
+    width: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+
+    position: relative;
+}
+
+.datePanel {
+    box-sizing: border-box;
+    background-color: var(--soil-clay);
+    border-radius: 10px;
+
+    font-family: "IBM Plex Serif", serif;
+    font-weight: 500;
+    padding: 10px;
+
+    flex: 1;
+}
+
+.moreInfoButton {
+    height: 100%;
+    aspect-ratio: 1;
+    
+    margin-left: 10px;
+    box-sizing: border-box;
+    background-color: var(--soil-clay);
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.moreInfoIcon {
+    width: 70%;
+    aspect-ratio: 1;
+
+    background-color: black;
+    mask-image: url('/icons/Edit.svg');
+    mask-size: contain;
 }
 </style>

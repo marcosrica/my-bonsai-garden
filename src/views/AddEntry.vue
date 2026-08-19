@@ -132,14 +132,14 @@ async function saveEntry(): Promise<boolean> {
         //Adding entry to the database
         if (date.value != "") {
             //Add it with the day's date
-            result = await addEntry(id, imagePath, notes.value);
+            result = await addEntry_withTime(id, imagePath || "", notes.value, date.value);
         }
         else {
-            result = await addEntry_withTime(id, imagePath, notes.value, date.value);
+            result = await addEntry(id, imagePath || "", notes.value);
         }
 
         if (isPrimary.value) {
-            result2 = await changeTreeImage(id, imagePath);
+            result2 = await changeTreeImage(id, imagePath || "");
         }
 
         return true;

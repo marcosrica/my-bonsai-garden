@@ -171,9 +171,20 @@ export async function changeTreeImage(id: string, newImageUrl: string) {
 export async function addEntry(treeId: string, imagePath: string, text: string) {
   const db = await getConnection();
 
+  const date = new Date(Date.now());
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+
+  const finalDay: string = day < 10 ? "0" + day.toString() : day.toString();
+  const finalMonth: string = month < 10 ? "0" + month.toString() : month.toString();
+  const finalDate: string = finalDay + "/" + finalMonth + "/" + year.toString();
+
+  console.log("ADDED ENTRY WITH DATE: " + finalDate);
+  
   const result = await db.run(`
-    INSERT INTO feed (tree_id, image_path, text) VALUES (?, ?, ?)
-  `, [treeId, imagePath, text]);
+    INSERT INTO feed (tree_id, image_path, text, created_at) VALUES (?, ?, ?, ?)
+  `, [treeId, imagePath, text, finalDate]);
   
   const id = result.changes?.lastId;
   
@@ -183,6 +194,8 @@ export async function addEntry(treeId: string, imagePath: string, text: string) 
 export async function addEntry_withTime(treeId: string, imagePath: string, text: string, createdAt:string) {
   const db = await getConnection();
 
+  console.log("ADDING ENTRY WITH DATE " + createdAt);
+  
   const result = await db.run(`
     INSERT INTO feed (tree_id, image_path, text, created_at) VALUES (?, ?, ?, ?)
   `, [treeId, imagePath, text, createdAt]);
@@ -192,6 +205,10 @@ export async function addEntry_withTime(treeId: string, imagePath: string, text:
   return id != undefined;
 }
 
+export async function getEntries(treeId: string) {
+  const db = await getConnection();
+  return await db.query('SELECT id, text, image_path, created_at FROM feed WHERE tree_id = ?', [treeId]);
+}
 
 const dropTables = async (database: SQLiteDBConnection) => {
   await database.execute(`DROP TABLE IF EXISTS trees`);

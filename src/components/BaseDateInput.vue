@@ -1,8 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue';
 
-    const selectedDate = ref<string>('');
-
     const props = defineProps<{
         selectedDate: string,
     }>();
