@@ -1,9 +1,18 @@
 <script setup lang="ts">
-    import { ref } from 'vue';
+import { computed } from 'vue';
 
-    const props = defineProps<{
-        selectedDate: string,
-    }>();
+const props = defineProps<{
+  modelValue: string;
+}>();
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+}>();
+
+const dateValue = computed({
+  get: () => props.modelValue,
+  set: (value: string) => emit('update:modelValue', value),
+});
 </script>
 
 <template>
@@ -11,7 +20,7 @@
     <input
       id="date"
       type="date"
-      v-model="props.selectedDate"
+      v-model="dateValue"
       class="date-input"
     />
   </div>

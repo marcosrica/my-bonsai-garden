@@ -179,8 +179,6 @@ export async function addEntry(treeId: string, imagePath: string, text: string) 
   const finalDay: string = day < 10 ? "0" + day.toString() : day.toString();
   const finalMonth: string = month < 10 ? "0" + month.toString() : month.toString();
   const finalDate: string = finalDay + "/" + finalMonth + "/" + year.toString();
-
-  console.log("ADDED ENTRY WITH DATE: " + finalDate);
   
   const result = await db.run(`
     INSERT INTO feed (tree_id, image_path, text, created_at) VALUES (?, ?, ?, ?)

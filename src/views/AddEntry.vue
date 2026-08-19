@@ -106,6 +106,8 @@ function cancelCrop() {
 }
 
 async function saveEntry(): Promise<boolean> {
+  console.log("ADDING AN ENTRY, WITH BASE DATE: " + date.value);
+  
     //Avoiding empty responses
     if (!imageBase64.value && !(notes.value!="")) {
         alert('Por favor, añada una imagen o un texto');
@@ -132,7 +134,10 @@ async function saveEntry(): Promise<boolean> {
         //Adding entry to the database
         if (date.value != "") {
             //Add it with the day's date
-            result = await addEntry_withTime(id, imagePath || "", notes.value, date.value);
+            const [year, month, day] = date.value.split('-');
+            const formattedDate = `${day}/${month}/${year}`;
+            
+            result = await addEntry_withTime(id, imagePath || "", notes.value, formattedDate);
         }
         else {
             result = await addEntry(id, imagePath || "", notes.value);
@@ -210,7 +215,7 @@ async function saveEntry(): Promise<boolean> {
 
                 <div class="metadataRow">
                     <p class="baseText marginless"> Fecha:  </p>
-                    <BaseDateInput :selectedDate="date"/>
+                    <BaseDateInput v-model:modelValue="date"/>
                 </div>
 
                 <div class="metadataRow" style="margin-top: 20px;">
