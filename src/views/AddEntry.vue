@@ -5,7 +5,7 @@ import BaseTextField from '@/components/BaseTextField.vue';
 import { chooseImage, shootImage, type CapturedImage } from '@/services/camera';
 import { addEntry, addEntry_withTime, changeTreeImage } from '@/services/database';
 import { savePhoto } from '@/services/storage';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Cropper } from 'vue-advanced-cropper';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
@@ -16,7 +16,7 @@ let id = useRoute().query.id as string;
 const maxPos = ref<number>(1);
 const pos = ref<number>(0);
 
-const isPrimary = ref<boolean>();
+const isPrimary = ref<boolean>(false);
 
 const imageBase64 = ref<string | null>(null);      // cropped base64 (will be saved)
 const imageDataUrl = ref<string | null>(null);      // cropped data URL (preview)
@@ -138,7 +138,7 @@ async function saveEntry(): Promise<boolean> {
             result = await addEntry_withTime(id, imagePath, notes.value, date.value);
         }
 
-        if (isPrimary) {
+        if (isPrimary.value) {
             result2 = await changeTreeImage(id, imagePath);
         }
 
@@ -149,6 +149,10 @@ async function saveEntry(): Promise<boolean> {
       return false;
     }
 }
+
+onMounted(() => {
+  setInterval(() => { console.log(isPrimary.value) }, 10);
+})
 </script>
 
 <template>
