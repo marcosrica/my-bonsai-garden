@@ -149,10 +149,6 @@ async function saveEntry(): Promise<boolean> {
       return false;
     }
 }
-
-onMounted(() => {
-  setInterval(() => { console.log(isPrimary.value) }, 10);
-})
 </script>
 
 <template>
