@@ -1,7 +1,7 @@
 import JSZip, { files } from "jszip";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Share } from "@capacitor/share";
-import { addFullTreeData, getConnection } from "@/services/database";
+import { addEntry_withTime, addFullTreeData, getConnection } from "@/services/database";
 import { ref } from "vue";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
 
@@ -173,6 +173,12 @@ async function restoreDb(data: any, photos:unzippedFile[]) {
       case "trees":
         console.log("Working on trees database");
         await restoreTreesDb(newData.schema, newData.values, photos);
+        break;
+
+      case "feed":
+        console.log("Working on feed database");
+        await restoreFeedDb(newData.schema, newData.values, photos);
+        break;
     }
   }
 }
@@ -181,7 +187,7 @@ async function restoreTreesDb(schema: any, values: any, photos:unzippedFile[]) {
   console.log("Working on restoring the trees database with table structure ", schema);
   
   for (const [rowPos, data] of Object.entries(values)) {
-    console.log("Row iterated:", data);
+    console.log("Feed row iterated:", data);
     const rowData = (data as any);
 
     const name = rowData[2];
@@ -201,6 +207,33 @@ async function restoreTreesDb(schema: any, values: any, photos:unzippedFile[]) {
     const image = getUrl(end, photos);
     
     const response = await addFullTreeData(name, description, image, species, yearPlanted, lastTransplanted, lastAbonated, createdAt, dead);
+
+    if (!response) {
+      alert("Ha ocurrido un error mientras se recuperaba la base de datos");
+      return;
+    }
+  }
+}
+
+async function restoreFeedDb(schema: any, values: any, photos:unzippedFile[]) {
+  console.log("Working on restoring the feed database with table structure ", schema);
+  
+  for (const [rowPos, data] of Object.entries(values)) {
+    console.log("Row iterated:", data);
+    const rowData = (data as any);
+
+    const treeId = rowData[1];
+    const text = rowData[2];
+    const createdAt = rowData[4];
+
+    //Treating the image
+    const startingImage:string = rowData[3];
+    const startingImageParts:string[] = startingImage.split("/");
+    const end:string = startingImageParts[startingImageParts.length - 1] || "undefined";
+    
+    const image = getUrl(end, photos);
+    
+    const response = await addEntry_withTime(treeId, image, text, createdAt);
 
     if (!response) {
       alert("Ha ocurrido un error mientras se recuperaba la base de datos");

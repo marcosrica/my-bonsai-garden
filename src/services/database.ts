@@ -208,6 +208,28 @@ export async function getEntries(treeId: string) {
   return await db.query('SELECT id, text, image_path, created_at FROM feed WHERE tree_id = ?', [treeId]);
 }
 
+export async function changeEntryDate(id: string, newDate: string) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    UPDATE feed SET created_at = ? WHERE id = ?
+  `, [newDate, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
+export async function changeEntryText(id: string, newText: string) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    UPDATE feed SET text = ? WHERE id = ?
+  `, [newText, id]);
+
+  const finalId = result.changes?.lastId;
+  return finalId != undefined; 
+}
+
 const dropTables = async (database: SQLiteDBConnection) => {
   await database.execute(`DROP TABLE IF EXISTS trees`);
   await database.execute(`DROP TABLE IF EXISTS feed`);

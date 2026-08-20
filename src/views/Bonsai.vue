@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
+import BaseTextField from '@/components/BaseTextField.vue';
 import type Entries from '@/interfaces/Entries';
 import type fullTreeData from '@/interfaces/FullTreeData';
-import { abonateTree, changeTreeInit, changeTreeName, changeTreeSpecies, killTree, transplantTree } from '@/services/database';
+import { abonateTree, changeEntryDate, changeEntryText, changeTreeInit, changeTreeName, changeTreeSpecies, killTree, transplantTree } from '@/services/database';
 import { useFeedStore, useFullTreeStore } from '@/stores/trees';
 import { Capacitor } from '@capacitor/core';
 import { onMounted, ref } from 'vue';
@@ -33,6 +34,11 @@ const transplantPressed = ref<boolean>(false);
 
 const feedStore = useFeedStore();
 const feedData = ref<Entries[]>([]);
+
+const feedEditedId = ref<number>(-1);
+const editingFeed = ref<boolean>(false);
+const newFeedText = ref<string>("");
+const newFeedDate = ref<string>("");
 
 const transplant = async () => {
     const _id = id?.toString() || "";
@@ -152,6 +158,39 @@ const hideEditPanel = () => {
     showEditPanel.value = false;
 }
 
+const editEntryClicked = (entryId: number) => {
+    feedEditedId.value = entryId;
+    editingFeed.value = !editingFeed.value;
+
+    feedData.value.forEach((entry) => {
+        if (entry.id == entryId) { 
+            newFeedDate.value = entry.created_at;
+            newFeedText.value = entry.text;
+        }
+    });
+}
+
+const saveEntry = async () => {
+    //Checking for the date
+    const [day, month, year] = newFeedDate.value.split("/");
+
+    if (day && month && year) {
+        const result1 = await changeEntryDate(feedEditedId.value.toString(), newFeedDate.value);
+        const result2 = await changeEntryText(feedEditedId.value.toString(), newFeedText.value);
+
+        if (result1 && result2) {
+            editingFeed.value = false;
+            await getFeed(id as string);
+        }
+        else {
+          alert("Ha ocurrido un error al guardar los cambios. Por favor, inténtelo de nuevo");
+        } 
+    }
+    else {
+        alert("Indique una fecha válida (dd/mm/aa)")
+    }
+}
+
 onMounted(async () => {
     if (id == undefined) {
         id = "-1";
@@ -251,17 +290,24 @@ onMounted(async () => {
 
         <div :class="['info', entry.id == feedData[feedData.length - 1]?.id ? 'lastEntry' : '']" v-for="entry in feedData">
             <div class="entryTitle" style="margin-bottom: 10px;">
-                <div clasS="datePanel">
+                <BaseTextField style="height: 40px;" v-if="editingFeed && (feedEditedId == entry.id)" v-model="newFeedDate" type="text" />
+                <div v-else class="datePanel">
                     <p class="marginless"> {{entry.created_at}} </p>
                 </div>
 
-                <div class="moreInfoButton">
-                    <div class="moreInfoIcon"/>
+                <div :class="['moreInfoButton', editingFeed && (feedEditedId == entry.id) ? 'cancelEditButton' : '']" v-on:click="editEntryClicked(entry.id)">
+                    <div :class="['moreInfoIcon', editingFeed && (feedEditedId == entry.id) ? 'cancelEditIcon' : '']"/>
                 </div>
             </div>
             <div v-if="entry.image_path != ''" class="entryImage" :style="{ backgroundImage: `url(${Capacitor.convertFileSrc(entry.image_path)})`, marginBottom: `10px` }"/>
-            <div v-if="entry.text != ''" class="basicInfo" style="margin-bottom: 0px;">
+            
+            <BaseTextField v-if="editingFeed && (feedEditedId == entry.id)" v-model="newFeedText" type="textarea" :rows="4"/>
+            <div v-if="(entry.text != '') && !(editingFeed && (feedEditedId == entry.id))" class="basicInfo" style="margin-bottom: 0px;">
                 <p class="marginless"> {{entry.text}} </p>
+            </div>
+
+            <div v-if="editingFeed && (feedEditedId == entry.id)" style="margin-top: 5px;" class="acceptButton" v-on:click="saveEntry">
+                <p class="marginless treeSpeciesText" style="font-style: normal;"> Guardar </p>
             </div>
         </div>
 
@@ -556,5 +602,13 @@ onMounted(async () => {
     background-color: black;
     mask-image: url('/icons/Edit.svg');
     mask-size: contain;
+}
+
+.cancelEditButton {
+    background-color: var(--soil-error);
+}
+
+.cancelEditIcon {
+    mask-image: url('/icons/Cross.svg');
 }
 </style>
