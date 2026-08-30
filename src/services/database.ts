@@ -1,9 +1,27 @@
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
+import { Capacitor } from '@capacitor/core';
+import {
+  CapacitorSQLite,
+  SQLiteConnection,
+  SQLiteDBConnection,
+} from '@capacitor-community/sqlite';
 
 let db: SQLiteDBConnection | null = null;
-const sqlite = new SQLiteConnection(CapacitorSQLite);
+let sqlite: SQLiteConnection | null = null;
+
+async function waitForPlugin(timeoutMs = 8000): Promise<void> {
+  const start = Date.now();
+  while (!Capacitor.isPluginAvailable('CapacitorSQLite')) {
+    if (Date.now() - start > timeoutMs) {
+      throw new Error('CapacitorSQLite plugin not available after timeout');
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+}
 
 export async function initDatabase(): Promise<void> {
+  await waitForPlugin();
+  sqlite = new SQLiteConnection(CapacitorSQLite);
+
   try {
     db = await sqlite.retrieveConnection('bonsai-db', false);
   }

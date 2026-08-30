@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-//import HelloWorld from './components/HelloWorld.vue'
+
+import { onMounted } from 'vue';
+import { initDatabase } from './services/database';
+
+onMounted(async () => {
+    try {
+        await initDatabase();
+        console.log('Database ready');
+    } catch (error) {
+        console.error('Database init failed:', error);
+        // Optionally show a user-friendly error on screen
+    }
+});
 </script>
 
 <template>

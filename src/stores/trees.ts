@@ -3,6 +3,7 @@ import { getEntries, getMenuTrees, getTreeData, initDatabase } from "@/services/
 import type treeMenuData from "@/interfaces/TreeMenuData";
 import type fullTreeData from "@/interfaces/FullTreeData";
 import type Entries from "@/interfaces/Entries";
+import { ensureDatabaseReady } from "@/services/dbInit";
 
 export interface Tree {
   id: number;
@@ -19,7 +20,7 @@ export const useTreeStore = defineStore('trees', {
   }),
   actions: {
     async init() {
-      await initDatabase();
+      await ensureDatabaseReady();
       await this.fetchTrees();
     },
     
@@ -39,7 +40,7 @@ export const useFullTreeStore = defineStore('tree', {
   }),
   actions: {
     async init(id: string) {
-      await initDatabase();
+      await ensureDatabaseReady();
       await this.getData(id);
     },
     
@@ -55,19 +56,33 @@ export const useFullTreeStore = defineStore('tree', {
 export const useFeedStore = defineStore('entries', {
   state: () => ({
     entries: [] as Entries[],
-    loading: false,  
+    loading: false,
   }),
   actions: {
     async init(id: string) {
-      await initDatabase();
+      await ensureDatabaseReady();
       await this.getData(id);
     },
 
     async getData(id: string) {
       this.loading = true;
       const result = await getEntries(id);
-      this.entries = result.values as Entries[];
+      const entries = result.values as Entries[];
+    
+      // Sort by created_at descending (dd/mm/yyyy)
+      entries.sort((a, b) => {
+        const dateA = this.parseDate(a.created_at);
+        const dateB = this.parseDate(b.created_at);
+        return dateB.getTime() - dateA.getTime(); // descending
+      });
+    
+      this.entries = entries;
       this.loading = false;
+    },
+
+    parseDate(dateStr: string) {
+      const [day, month, year] = dateStr.split('/').map(Number);
+      return new Date(year || 0, (month || 1) - 1, day);
     }
   }
 })

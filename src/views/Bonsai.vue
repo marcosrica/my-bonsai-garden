@@ -299,7 +299,10 @@ onMounted(async () => {
                     <div :class="['moreInfoIcon', editingFeed && (feedEditedId == entry.id) ? 'cancelEditIcon' : '']"/>
                 </div>
             </div>
-            <div v-if="entry.image_path != ''" class="entryImage" :style="{ backgroundImage: `url(${Capacitor.convertFileSrc(entry.image_path)})`, marginBottom: `10px` }"/>
+            
+            <div v-if="entry.image_path != ''" class="entryImageWrapper" :style="{ marginBottom: `10px` }">
+                <img class="entryImage" :src="Capacitor.convertFileSrc(entry.image_path)" />
+            </div>
             
             <BaseTextField v-if="editingFeed && (feedEditedId == entry.id)" v-model="newFeedText" type="textarea" :rows="4"/>
             <div v-if="(entry.text != '') && !(editingFeed && (feedEditedId == entry.id))" class="basicInfo" style="margin-bottom: 0px;">
@@ -544,13 +547,22 @@ onMounted(async () => {
   pointer-events: none;
 }
 
-.entryImage {
+.entryImageWrapper {
     width: 100%;
-    height: 50dvh;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     border-radius: 8px;
+}
+
+.entryImage {
+    display: block;
+    border-radius: 8px;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: initial;
+    max-width: 100%;
+    max-height: 50dvh;
 }
 
 .lastEntry {
