@@ -163,7 +163,7 @@ function encodeInBase64(buffer: ArrayBuffer): string {
 
 async function restoreDb(data: any, photos:unzippedFile[]) {
   console.log("DATABSE TABLES: ", data.export.tables);
-  const tables = Object.entries(data.export.tables);
+  let treesMap: Map<number, number> = new Map(); // Map<backup_id, new_id>
 
   for (const [tableName, tableData] of Object.entries(data.export.tables)) {
     console.log("Table iterated:", tableName, tableData);
@@ -172,24 +172,27 @@ async function restoreDb(data: any, photos:unzippedFile[]) {
     switch (newData.name) {
       case "trees":
         console.log("Working on trees database");
-        await restoreTreesDb(newData.schema, newData.values, photos);
+        const result = await restoreTreesDb(newData.schema, newData.values, photos);
+        treesMap = result || new Map();
         break;
 
       case "feed":
         console.log("Working on feed database");
-        await restoreFeedDb(newData.schema, newData.values, photos);
+        await restoreFeedDb(newData.schema, newData.values, photos, treesMap);
         break;
     }
   }
 }
 
-async function restoreTreesDb(schema: any, values: any, photos:unzippedFile[]) {
+async function restoreTreesDb(schema: any, values: any, photos:unzippedFile[]):Promise<Map<number, number> | undefined> {
   console.log("Working on restoring the trees database with table structure ", schema);
+  const map: Map<number, number> = new Map();
   
   for (const [rowPos, data] of Object.entries(values)) {
     console.log("Feed row iterated:", data);
     const rowData = (data as any);
 
+    const id = rowData[0];
     const name = rowData[2];
     const description = rowData[3];
     const species = rowData[5];
@@ -206,23 +209,29 @@ async function restoreTreesDb(schema: any, values: any, photos:unzippedFile[]) {
     
     const image = getUrl(end, photos);
     
-    const response = await addFullTreeData(name, description, image, species, yearPlanted, lastTransplanted, lastAbonated, createdAt, dead);
+    const response:number | undefined = await addFullTreeData(name, description, image, species, yearPlanted, lastTransplanted, lastAbonated, createdAt, dead);
 
-    if (!response) {
+    if (response == undefined) {
       alert("Ha ocurrido un error mientras se recuperaba la base de datos");
       return;
     }
+    else {
+      //Tree was inserted correctly
+      map.set(id, response);
+    }
   }
+
+  return map;
 }
 
-async function restoreFeedDb(schema: any, values: any, photos:unzippedFile[]) {
+async function restoreFeedDb(schema: any, values: any, photos:unzippedFile[], mappedTrees: Map<number, number> | undefined) {
   console.log("Working on restoring the feed database with table structure ", schema);
   
   for (const [rowPos, data] of Object.entries(values)) {
     console.log("Row iterated:", data);
     const rowData = (data as any);
 
-    const treeId = rowData[1];
+    const treeId = mappedTrees?.get(rowData[1]) || rowData[1];
     const text = rowData[2];
     const createdAt = rowData[4];
 
