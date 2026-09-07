@@ -5,9 +5,10 @@ import BaseTextField from '@/components/BaseTextField.vue';
 import type treeMenuData from '@/interfaces/TreeMenuData';
 import { useTreeStore } from '@/stores/trees';
 import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 import { Capacitor } from '@capacitor/core';
+import { scheduleNotification, startNotifications } from '@/services/notifications';
+import type fullTreeData from '@/interfaces/FullTreeData';
 
 enum notificationTypes {
     general = 0,
@@ -28,17 +29,15 @@ const getTrees = async () => {
     await treeStore.fetchTrees();
     trees.value = treeStore.trees;
 
-    selectedTree.value = trees.value[0]?.id;
+    selectedTree.value = trees.value[0];
 }
 
-const selectTree = (id: number) => {
-  console.log("previous selected tree: " + selectedTree.value);
-  selectedTree.value = id;
-  console.log("current selected tree: " + selectedTree.value);
+const selectTree = (data: treeMenuData) => {
+    selectedTree.value = data;
 }
 
 const type = ref<notificationTypes>(notificationTypes.general);
-const selectedTree = ref<number>();
+const selectedTree = ref<treeMenuData>();
 
 const date = ref<string>("");
 const body = ref<string>("");
@@ -53,7 +52,7 @@ const goForward = async () => {
         pos.value = pos.value + 1;
     }
     else {
-        const result: boolean = true;//await saveEntry();
+        const result: boolean = await setNotification();
         if (result) {
           router.push("/reminders");
         }
@@ -69,7 +68,43 @@ const goBackwards = () => {
     }
 }
 
+const setNotification = async () => {
+    let result: boolean = true;
+
+    let notificationDate: Date = new Date(Date.now());
+    if (date.value != "") {
+        notificationDate = new Date(date.value);
+    }
+
+    console.log("The notification is due: " + notificationDate);
+    
+    switch (type.value) {
+        case notificationTypes.general:
+            await scheduleNotification(title.value, body.value, notificationDate);
+            break;
+
+        case notificationTypes.prune:
+            await scheduleNotification("Hora de podar a " + selectedTree.value?.name, body.value, notificationDate);
+            break;
+
+        case notificationTypes.transplant:
+            await scheduleNotification("Hora de transplantar a " + selectedTree.value?.name, body.value, notificationDate);
+            break;
+
+        case notificationTypes.fertilise:
+            await scheduleNotification("Hora de ponerle abono a " + selectedTree.value?.name, body.value, notificationDate);
+            break;
+
+        case notificationTypes.medicate:
+            await scheduleNotification("Hora de cuidar de " + selectedTree.value?.name, body.value, notificationDate);
+            break;
+    }
+    
+    return result;
+}
+
 onMounted(async () => {
+    startNotifications();
     await getTrees();
 })
 </script>
@@ -110,7 +145,7 @@ onMounted(async () => {
 
                 <div class="treesPickerWrapper">
                     <div class="treesPickerContainer">
-                        <div v-for="tree in trees" :class="['treeContainer', selectedTree == tree.id ? 'treeSelected' : '']" v-on:click="selectTree(tree.id)">
+                        <div v-for="tree in trees" :class="['treeContainer', selectedTree == tree ? 'treeSelected' : '']" v-on:click="selectTree(tree)">
                             <div class="TreeImg" :style="{ backgroundImage: `url(${Capacitor.convertFileSrc(tree.image)})` }"/>
                             <div class="TreeData">
                                 <p class="marginless treeNameText"> {{tree.name}} </p>

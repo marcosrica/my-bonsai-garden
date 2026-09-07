@@ -1,11 +1,11 @@
 import { LocalNotifications } from "@capacitor/local-notifications";
 
-async function startNotifications() {
+export async function startNotifications() {
   //Requesting the permission to send notifications
   await LocalNotifications.requestPermissions();
 }
 
-async function scheduleNotification(title: string, body: string, date: Date) {
+export async function scheduleNotification(title: string, body: string, date: Date) {
   await LocalNotifications.schedule({
     notifications: [
       {
