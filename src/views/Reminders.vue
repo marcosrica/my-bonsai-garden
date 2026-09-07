@@ -4,13 +4,13 @@ import BasePage from '@/components/BasePage.vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const addEntry = () => {
+const addReminder = () => {
     router.push("/addReminder");
 }
 </script>
 
 <template>
-    <BasePage location="reminder">
+    <BasePage location="reminder" :addClicked="addReminder">
         <div class="HomeOptions">
             <h1 class="Header"> Recordatorios </h1>
         </div>
