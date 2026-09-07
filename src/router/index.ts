@@ -3,6 +3,7 @@ import TreesView from '@/views/TreesView.vue'
 import Reminders from '@/views/Reminders.vue'
 import Bonsai from '@/views/Bonsai.vue'
 import AddEntry from '@/views/AddEntry.vue'
+import AddReminder from '@/views/AddReminder.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/addEntry',
       name: 'Add entry',
       component: AddEntry,
+    },
+    {
+      path: '/addReminder',
+      name: 'Add reminder',
+      component: AddReminder
     }
   ],
 })
