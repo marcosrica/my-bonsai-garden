@@ -1,5 +1,12 @@
 <script setup lang="ts">
 import BasePage from '@/components/BasePage.vue';
+
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const addEntry = () => {
+    router.push("/addReminder");
+}
 </script>
 
 <template>
