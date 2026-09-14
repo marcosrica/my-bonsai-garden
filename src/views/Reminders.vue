@@ -36,7 +36,19 @@
     
     const getReminders = async () => {
         const showNot = await getPendingNotifications();
-        reminders.value = showNot;
+        const now = new Date().getTime();
+        
+        reminders.value = showNot.filter(notif => {
+            const scheduledAt = notif.schedule?.at;
+            if (!scheduledAt) { return false; } //No schedule means not a real pending reminder
+      
+            //Normalize the value (it comes back as a string from the native bridge)
+            const when = scheduledAt instanceof Date 
+                ? scheduledAt.getTime() 
+                : new Date(scheduledAt as unknown as string).getTime();
+      
+            return when > now; // keep only future reminders
+        });
         console.log(showNot);
     };
 
