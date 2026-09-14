@@ -49,9 +49,16 @@ export async function getPendingNotifications(): Promise<PendingLocalNotificatio
 }
 
 export async function editNotification(id: number, newTitle: string, newBody: string, newDate: Date) {
+  console.log("Wants to edit a notification");
+  console.log("New notification data; name: ", newTitle, " ; body: ", newBody, " ; date: ", newDate);
+  
   //First cancel the existing notification
   await LocalNotifications.cancel({ notifications: [{ id: id }] });
 
   //Setting up the new notification
   await scheduleNotification(newTitle, newBody, newDate, id = id);
 } 
+
+export async function cancelNotification(id: number) {
+  await LocalNotifications.cancel({ notifications: [{ id: id }] });
+}
