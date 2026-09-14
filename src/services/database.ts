@@ -57,7 +57,7 @@ export async function initDatabase(): Promise<void> {
       text TEXT,
       image_path TEXT,
       created_at TEXT DEFAULT (datetime('now')),
-      FOREIGN KEY (tree_id) REFERENCES trees(id)
+      FOREIGN KEY (tree_id) REFERENCES trees(id) ON DELETE CASCADE
     );
   `);
 }
@@ -79,6 +79,18 @@ export async function getTreeData(id: string) {
   const result = await db.query('SELECT * FROM trees WHERE id = ?', [id]);
   console.log(result);
   return result;
+}
+
+export async function deleteFullTree(treeId: number) {
+  const db = await getConnection();
+
+  const result = await db.run(`
+    DELETE FROM trees WHERE id = ?
+    `, [treeId]);
+
+  const id = result.changes?.lastId;
+
+  return id != undefined;
 }
 
 export async function addNewTree(name: string, species: string, imgPath:string): Promise<boolean> {

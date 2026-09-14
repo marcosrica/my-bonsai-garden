@@ -3,7 +3,7 @@ import BaseBonsaiPage from '@/components/BaseBonsaiPage.vue';
 import BaseTextField from '@/components/BaseTextField.vue';
 import type Entries from '@/interfaces/Entries';
 import type fullTreeData from '@/interfaces/FullTreeData';
-import { abonateTree, changeEntryDate, changeEntryText, changeTreeInit, changeTreeName, changeTreeSpecies, killTree, transplantTree } from '@/services/database';
+import { abonateTree, changeEntryDate, changeEntryText, changeTreeInit, changeTreeName, changeTreeSpecies, deleteFullTree, killTree, transplantTree } from '@/services/database';
 import { useFeedStore, useFullTreeStore } from '@/stores/trees';
 import { Capacitor } from '@capacitor/core';
 import { onMounted, ref } from 'vue';
@@ -197,7 +197,16 @@ const editEntryClicked = (entryId: number) => {
 }
 
 const deleteTree = async () => {
+    let finalId: number;
+    if (data.value != undefined) {
+        finalId = data.value?.id
+    }
+    else {
+        finalId = -1;
+    }
   
+    await deleteFullTree(finalId);
+    router.push("/");
 }
 
 const saveEntry = async () => {
