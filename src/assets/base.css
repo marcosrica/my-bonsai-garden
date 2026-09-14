@@ -1,0 +1,16 @@
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+    --soil-bg: #f1cb75;
+    --soil-surface: #EDE6D6;
+    --soil-primary: #7A8450;
+    --soil-secondary: #8B7355;
+    --soil-accent: #A3B18A;
+    --soil-accent-hover: #5d772f;
+    --soil-clay: #C68B59;
+    --soil-text: #3E3A32;
+    --soil-text-muted: #6B655A;
+    --soil-border: #D6CCB8;
+    --soil-error: #B5654A;
+    --radius-card: 12px;
+    --shadow-card: 0 2px 8px rgba(62, 58, 50, 0.08);
+}
