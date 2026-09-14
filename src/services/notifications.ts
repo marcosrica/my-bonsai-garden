@@ -1,4 +1,4 @@
-import { LocalNotifications } from "@capacitor/local-notifications";
+import { LocalNotifications, type PendingLocalNotificationSchema, type PendingResult } from "@capacitor/local-notifications";
 
 export async function startNotifications() {
   //Requesting the permission to send notifications
@@ -16,4 +16,9 @@ export async function scheduleNotification(title: string, body: string, date: Da
       },
     ],
   });
+}
+
+export async function getPendingNotifications(): Promise<PendingLocalNotificationSchema[]> {
+  const pending:PendingResult = await LocalNotifications.getPending();
+  return pending.notifications;
 }
