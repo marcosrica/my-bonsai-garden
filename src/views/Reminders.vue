@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import BasePage from '@/components/BasePage.vue';
     import BaseTextField from '@/components/BaseTextField.vue';
-    import { editNotification, getPendingNotifications } from '@/services/notifications';
+    import { cancelNotification, editNotification, getPendingNotifications } from '@/services/notifications';
     import type { PendingLocalNotificationSchema } from '@capacitor/local-notifications';
     import { onMounted, ref } from 'vue';
     import { useRouter } from 'vue-router';
@@ -56,6 +56,9 @@
           
             if (deleteCounter.value >= 5000) {
                 deleteCounter.value = 0;
+              
+                deleteReminder();
+                
                 editingReminders.value = false;
                 getReminders();
             }
@@ -85,11 +88,21 @@
         return "ERROR";
     }
 
+    const deleteReminder = async () => {
+        cancelNotification(editingReminderId.value);
+        editingReminders.value = false;
+        await getReminders();
+    }
+    
     const saveReminder = async (reminderId:number) => {
         const [day, month, year] = newReminderDate.value.split("/");
         
         if (day && month && year) {
-            await editNotification(reminderId, newReminderTitle.value, newReminderBody.value, new Date(newReminderDate.value)); 
+            const finalDate = new Date(+year, +month - 1, +day);
+          
+            await editNotification(reminderId, newReminderTitle.value, newReminderBody.value, finalDate); 
+            editingReminders.value = false;
+            await getReminders();
         }
         else {
             alert("Indique una fecha válida (dd/mm/aa)")
