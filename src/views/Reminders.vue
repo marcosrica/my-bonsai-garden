@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import BasePage from '@/components/BasePage.vue';
     import BaseTextField from '@/components/BaseTextField.vue';
-    import { getPendingNotifications } from '@/services/notifications';
+    import { editNotification, getPendingNotifications } from '@/services/notifications';
     import type { PendingLocalNotificationSchema } from '@capacitor/local-notifications';
     import { onMounted, ref } from 'vue';
     import { useRouter } from 'vue-router';
@@ -19,6 +19,21 @@
     const newReminderTitle = ref<string>("");
     const newReminderBody = ref<string>("");
     
+    const deletePressed = ref<boolean>(false);
+    const deleteCounter = ref<number>(0);
+
+    const deleteReminderPressed = (e: PointerEvent) => {
+        console.log("Pressed");
+        e.preventDefault();
+        deletePressed.value = true;
+    }
+    
+    const deleteReminderNotPressed = (e: PointerEvent) => {
+        console.log("not Pressed");
+        e.preventDefault();
+        deletePressed.value = false;
+    }
+    
     const getReminders = async () => {
         const showNot = await getPendingNotifications();
         reminders.value = showNot;
@@ -33,6 +48,21 @@
 
         editingReminders.value = !editingReminders.value;
         console.log(editingReminderId);
+    }
+
+    const tick = () => {
+        if (deletePressed.value) {
+            deleteCounter.value = Math.min(5000, deleteCounter.value + 10);
+          
+            if (deleteCounter.value >= 5000) {
+                deleteCounter.value = 0;
+                editingReminders.value = false;
+                getReminders();
+            }
+        }
+        else {
+            deleteCounter.value = Math.max(0, deleteCounter.value - 10);
+        }
     }
     
     const parseDate = (date: Date | undefined): string => {
@@ -55,8 +85,21 @@
         return "ERROR";
     }
 
+    const saveReminder = async (reminderId:number) => {
+        const [day, month, year] = newReminderDate.value.split("/");
+        
+        if (day && month && year) {
+            await editNotification(reminderId, newReminderTitle.value, newReminderBody.value, new Date(newReminderDate.value)); 
+        }
+        else {
+            alert("Indique una fecha válida (dd/mm/aa)")
+        }
+    }
+    
     onMounted(async () => {
         await getReminders();
+      
+        setInterval(tick, 10);
     });
 </script>
 
@@ -90,12 +133,16 @@
                 </div>
 
                 <div class="entryTitle" v-if="editingReminders && (editingReminderId == notification.id)" >
-                    <div v-if="editingReminders && (editingReminderId == notification.id)" style="margin-right: 10px;" class="acceptButton"> <!--v-on:click="saveEntry"-->
+                    <div v-if="editingReminders && (editingReminderId == notification.id)" style="margin-right: 10px;" class="acceptButton" v-on:click="saveReminder(notification.id)"> <!--v-on:click="saveEntry"-->
                         <p class="marginless treeSpeciesText" style="font-style: normal;"> Guardar </p>
                     </div>
 
-                    <div v-if="editingReminders && (editingReminderId == notification.id)"  class="deleteButton"> <!--v-on:click="saveEntry"-->
-                        <p class="marginless treeSpeciesText" style="font-style: normal;"> Eliminar </p>
+                    <div v-if="editingReminders && (editingReminderId == notification.id)" style="position: relative; overflow: hidden;" class="deleteButton button" @pointerdown="deleteReminderPressed"
+                        @pointerup=    "deleteReminderNotPressed"
+                        @pointercancel="deleteReminderNotPressed"
+                        @pointerleave= "deleteReminderNotPressed">
+                        <div class="progress-fill" :style="{ width: `${(deleteCounter / 5000) * 100}%` }" />
+                        <p class="marginless treeSpeciesText" style="font-style: normal; z-index: 1;"> Eliminar </p>
                     </div>
                 </div>
             </div>
@@ -252,6 +299,14 @@
         background-color: var(--soil-accent-hover);
     }
 
+    .button {
+        transition: 0.3s ease;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+        overflow: hidden;
+    }
+    
     .deleteButton {
         padding: 10px;
         background-color: var(--soil-error);
@@ -266,7 +321,13 @@
         transition: 0.3s ease;
     }
 
-    .deleteButton:hover {
+    .progress-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;            
         background-color: #ff0000;
+        z-index: 0;              
+        pointer-events: none;
     }
 </style>
