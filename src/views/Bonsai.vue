@@ -32,6 +32,9 @@ const abonatePressed = ref<boolean>(false);
 const transplantCounter = ref<number>(0);
 const transplantPressed = ref<boolean>(false);
 
+const deleteCounter = ref<number>(0);
+const deletePressed = ref<boolean>(false);
+
 const feedStore = useFeedStore();
 const feedData = ref<Entries[]>([]);
 
@@ -127,6 +130,29 @@ const tick = () => {
     else {
         transplantCounter.value = Math.max(0, transplantCounter.value - 10);
     }
+
+    if (deletePressed.value) {
+        deleteCounter.value = Math.min(5000, deleteCounter.value + 10);
+
+        if (deleteCounter.value >= 5000) {
+            deleteCounter.value = 0;
+            hideEditPanel();
+            deleteTree();
+        }
+    }
+    else {
+        deleteCounter.value = Math.max(0, transplantCounter.value - 10);
+    }
+}
+
+const deleteTreePressed = (e: PointerEvent) => {
+    e.preventDefault();
+    deletePressed.value = true;
+}
+
+const deleteTreeNotPressed = (e: PointerEvent) => {
+    e.preventDefault();
+    deletePressed.value = false;
 }
 
 const abonateTreePressed = (e: PointerEvent) => {
@@ -168,6 +194,10 @@ const editEntryClicked = (entryId: number) => {
             newFeedText.value = entry.text;
         }
     });
+}
+
+const deleteTree = async () => {
+  
 }
 
 const saveEntry = async () => {
@@ -221,6 +251,15 @@ onMounted(async () => {
                     <div class="closeEditPanel" v-on:click="hideEditPanel">
                         <div class="editIcon" style="mask-image: url('/icons/Cross.svg');"/>
                     </div>
+                </div>
+
+                <div :class="['basicInfo', 'button', deletePressed ? 'button-selected' : '']" @pointerdown="deleteTreePressed"
+                    @pointerup=    "deleteTreeNotPressed"
+                    @pointercancel="deleteTreeNotPressed"
+                    @pointerleave= "deleteTreeNotPressed"
+                    style="background-color:var(--soil-error);">
+                    <div class="progress-fill delete" :style="{ width: `${(deleteCounter / 5000) * 100}%` }" />
+                    <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Eliminar árbol </p>
                 </div>
 
                 <div :class="['basicInfo', 'button', transplantPressed ? 'button-selected' : '']" @pointerdown="transplantTreePressed"
@@ -545,6 +584,10 @@ onMounted(async () => {
   background-color:var(--soil-error);
   z-index: 0;              
   pointer-events: none;
+}
+
+.delete {
+    background-color: #ff0000;
 }
 
 .entryImageWrapper {
