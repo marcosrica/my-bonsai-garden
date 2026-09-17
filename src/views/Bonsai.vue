@@ -141,7 +141,7 @@ const tick = () => {
         }
     }
     else {
-        deleteCounter.value = Math.max(0, transplantCounter.value - 10);
+        deleteCounter.value = Math.max(0, deleteCounter.value - 10);
     }
 }
 
@@ -279,7 +279,7 @@ onMounted(async () => {
                     <p class="marginless treeNameText" style="font-size: 20px; text-align: center; width: 100%;"> Transplantar </p>
                 </div>
                 
-                <div :class="['basicInfo', 'button', abonatePressed ? 'button-selected' : '']" @pointerdown="abonateTreePressed"
+                <div :class="['basicInfo', 'button', abonatePressed ? 'button-selected' : '']" style="margin-bottom: 40px;" @pointerdown="abonateTreePressed"
                     @pointerup=    "abonateTreeNotPressed"
                     @pointercancel="abonateTreeNotPressed"
                     @pointerleave= "abonateTreeNotPressed">
@@ -479,7 +479,7 @@ onMounted(async () => {
     font-family: "IBM Plex Serif", serif;
     font-weight: 500;
 
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 }
 
 .blackBackground {
